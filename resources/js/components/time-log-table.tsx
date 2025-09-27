@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableHeaderRow, TableRow } from '@/components/ui/table'
 import { formatTimeEntry } from '@/lib/utils'
-import { Link } from '@inertiajs/react'
+import { Link, router } from '@inertiajs/react'
 import { Edit, Glasses, MoreVertical, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 export type TimeLogEntry = {
     id: number
@@ -18,6 +19,7 @@ export type TimeLogEntry = {
     duration: number
     user_name?: string
     is_paid?: boolean
+    is_invoiced?: boolean
     note?: string
     hourly_rate?: number
     paid_amount?: number
@@ -63,6 +65,8 @@ export default function TimeLogTable({
 }: TimeLogTableProps) {
     const [selectedTimeLog, setSelectedTimeLog] = useState<TimeLogEntry | null>(null)
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+    const [confirmOpen, setConfirmOpen] = useState(false)
+    const [targetLogId, setTargetLogId] = useState<number | null>(null)
     const showTeamMemberFinal = showTeamMember || showMember
 
     const handleViewDetails = (log: TimeLogEntry) => {
@@ -140,6 +144,18 @@ export default function TimeLogTable({
                                     {log.non_billable && (
                                         <Badge className="bg-purple-100 text-[10px] font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-100">
                                             Non-billable
+                                        </Badge>
+                                    )}
+                                    {log.is_invoiced && (
+                                        <Badge
+                                            onClick={() => {
+                                                setTargetLogId(log.id)
+                                                setConfirmOpen(true)
+                                            }}
+                                            className="bg-indigo-100 text-[10px] font-medium text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100 cursor-pointer"
+                                            title="Click to mark un-invoiced"
+                                        >
+                                            Invoiced
                                         </Badge>
                                     )}
                                     {log.tags && log.tags.length > 0 && (
@@ -281,6 +297,34 @@ export default function TimeLogTable({
             </Table>
 
             <TimeLogDetailsSheet timeLog={selectedTimeLog} open={isDetailsOpen} onOpenChange={setIsDetailsOpen} />
+
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Un-invoice time log</DialogTitle>
+                        <DialogDescription>Mark the time log un-invoiced.</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                if (targetLogId) {
+                                    router.post(route('time-log.uninvoice', targetLogId), {}, {
+                                        onFinish: () => {
+                                            setConfirmOpen(false)
+                                            setTargetLogId(null)
+                                            router.reload()
+                                        },
+                                    })
+                                }
+                            }}
+                        >
+                            Confirm
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }
