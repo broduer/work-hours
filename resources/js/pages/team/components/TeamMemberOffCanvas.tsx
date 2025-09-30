@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { router, useForm } from '@inertiajs/react'
-import { DollarSign, LoaderCircle, Lock, Mail, Save, User, UserPlus } from 'lucide-react'
-import { useEffect } from 'react'
+import { DollarSign, LoaderCircle, Lock, Mail, Save, User, UserPlus, Eye, EyeOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { Currency } from '@/pages/team/types'
@@ -46,6 +46,8 @@ type TeamMemberForm = {
 
 export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, genericEmails, user }: TeamMemberOffCanvasProps) {
     const isEdit = mode === 'edit'
+
+    const [showPin, setShowPin] = useState(false)
 
     const { data, setData, post, put, processing, errors, reset } = useForm<TeamMemberForm>({
         name: isEdit && user ? user.name : '',
@@ -378,7 +380,7 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                                                 </div>
                                                 <Input
                                                     id="clockin_pin"
-                                                    type="password"
+                                                    type={showPin ? 'text' : 'password'}
                                                     inputMode="numeric"
                                                     pattern="[0-9]*"
                                                     autoComplete="one-time-code"
@@ -391,8 +393,17 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                                                     }}
                                                     disabled={processing}
                                                     placeholder="0000"
-                                                    className="border-neutral-200 bg-white pl-10 tracking-widest ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
+                                                    className="border-neutral-200 bg-white pl-10 pr-10 tracking-widest ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
                                                 />
+                                                <button
+                                                    type="button"
+                                                    aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
+                                                    onClick={() => setShowPin((s) => !s)}
+                                                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                                    tabIndex={-1}
+                                                >
+                                                    {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                </button>
                                             </div>
                                             <InputError message={errors.clockin_pin} />
                                         </div>

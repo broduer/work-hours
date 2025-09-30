@@ -8,6 +8,8 @@ export type TeamMember = {
     currency: string
     non_monetary: boolean
     is_employee: boolean
+    enable_clockin?: boolean
+    clockin_pin?: string | null
     totalHours: number
     weeklyAverage: number
     unpaidHours: number

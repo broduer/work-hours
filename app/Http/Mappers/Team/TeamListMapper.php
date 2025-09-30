@@ -35,6 +35,8 @@ final class TeamListMapper
             'currency' => $team->currency,
             'non_monetary' => (bool) $team->non_monetary,
             'is_employee' => (bool) ($team->is_employee ?? false),
+            'enable_clockin' => (bool) ($team->enable_clockin ?? false),
+            'clockin_pin' => $team->clockin_pin,
             'totalHours' => $totalDuration,
             'weeklyAverage' => $weeklyAverage,
             'unpaidHours' => $unpaidHours,

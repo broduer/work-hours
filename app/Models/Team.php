@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $is_employee
  * @property User $user
  * @property User $member
+ * @property bool $enable_clockin
+ * @property string|null $clockin_pin
  */
 #[UsePolicy(TeamPolicy::class)]
 final class Team extends Model
