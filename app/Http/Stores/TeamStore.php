@@ -39,6 +39,8 @@ final class TeamStore
                 'currency' => $team->currency ?? 'USD',
                 'non_monetary' => (bool) ($team->non_monetary ?? false),
                 'is_employee' => (bool) ($team->is_employee ?? false),
+                'enable_clockin' => (bool) ($team->enable_clockin ?? false),
+                'clockin_pin' => $team->clockin_pin,
             ]);
         }
 
@@ -68,9 +70,11 @@ final class TeamStore
         ?float $hourlyRate,
         ?string $currency,
         bool $nonMonetary,
-        bool $isEmployee
+        bool $isEmployee,
+        bool $enableClockin = false,
+        ?string $clockinPin = null,
     ): array {
-        return DB::transaction(function () use ($ownerUserId, $userData, $hourlyRate, $currency, $nonMonetary, $isEmployee): array {
+        return DB::transaction(function () use ($ownerUserId, $userData, $hourlyRate, $currency, $nonMonetary, $isEmployee, $enableClockin, $clockinPin): array {
             $user = User::query()->where('email', $userData['email'])->first();
             $isNewUser = false;
 
@@ -82,6 +86,16 @@ final class TeamStore
             $finalNonMonetary = $isEmployee ? true : $nonMonetary;
             $finalHourlyRate = $finalNonMonetary ? 0 : ($hourlyRate ?? 0);
 
+            $finalEnableClockin = $isEmployee && $enableClockin;
+            $sanitizedPin = null;
+            if ($finalEnableClockin && $clockinPin !== null) {
+                $digitsOnly = preg_replace('/\D+/', '', $clockinPin) ?? '';
+                $sanitizedPin = mb_substr($digitsOnly, 0, 4);
+                if ($sanitizedPin === '') {
+                    $sanitizedPin = null;
+                }
+            }
+
             Team::query()->updateOrCreate(
                 [
                     'user_id' => $ownerUserId,
@@ -92,6 +106,8 @@ final class TeamStore
                     'currency' => $currency,
                     'non_monetary' => $finalNonMonetary,
                     'is_employee' => $isEmployee,
+                    'enable_clockin' => $finalEnableClockin,
+                    'clockin_pin' => $finalEnableClockin ? $sanitizedPin : null,
                 ]
             );
 
@@ -131,14 +147,28 @@ final class TeamStore
             }
             $hourlyRate = $nonMonetary ? 0 : ((float) ($data['hourly_rate'] ?? 0));
 
+            $enableClockin = isset($data['enable_clockin']) && (bool) $data['enable_clockin'];
+            $clockinPin = $data['clockin_pin'] ?? null;
+            $finalEnableClockin = $isEmployee && $enableClockin;
+            $sanitizedPin = null;
+            if ($finalEnableClockin && $clockinPin !== null) {
+                $digitsOnly = preg_replace('/\D+/', '', (string) $clockinPin) ?? '';
+                $sanitizedPin = mb_substr($digitsOnly, 0, 4);
+                if ($sanitizedPin === '') {
+                    $sanitizedPin = null;
+                }
+            }
+
             $teamData = [
                 'hourly_rate' => $hourlyRate,
                 'currency' => $data['currency'] ?? null,
                 'non_monetary' => $nonMonetary,
                 'is_employee' => $isEmployee,
+                'enable_clockin' => $finalEnableClockin,
+                'clockin_pin' => $finalEnableClockin ? $sanitizedPin : null,
             ];
 
-            unset($data['hourly_rate'], $data['currency'], $data['non_monetary'], $data['is_employee']);
+            unset($data['hourly_rate'], $data['currency'], $data['non_monetary'], $data['is_employee'], $data['enable_clockin'], $data['clockin_pin']);
 
             $memberUser->update($data);
 

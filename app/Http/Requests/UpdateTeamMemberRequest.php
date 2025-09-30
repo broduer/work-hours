@@ -34,6 +34,8 @@ final class UpdateTeamMemberRequest extends FormRequest
             'currency' => ['nullable', 'string', 'max:3'],
             'non_monetary' => ['sometimes', 'boolean'],
             'is_employee' => ['sometimes', 'boolean'],
+            'enable_clockin' => ['sometimes', 'boolean'],
+            'clockin_pin' => ['nullable', 'digits:4', 'required_if:enable_clockin,true'],
         ];
     }
 }

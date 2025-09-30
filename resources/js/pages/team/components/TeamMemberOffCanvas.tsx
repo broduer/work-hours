@@ -27,6 +27,8 @@ export type TeamMemberOffCanvasProps = {
         currency: string
         non_monetary: boolean
         is_employee: boolean
+        enable_clockin?: boolean
+        clockin_pin?: string | null
     }
 }
 
@@ -38,6 +40,8 @@ type TeamMemberForm = {
     currency: string
     non_monetary: boolean
     is_employee: boolean
+    enable_clockin: boolean
+    clockin_pin: string
 }
 
 export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, genericEmails, user }: TeamMemberOffCanvasProps) {
@@ -51,6 +55,8 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
         currency: isEdit && user ? user.currency : (currencies[0]?.code ?? 'USD'),
         non_monetary: isEdit && user ? user.non_monetary : false,
         is_employee: isEdit && user ? user.is_employee : false,
+        enable_clockin: isEdit && user ? Boolean(user.enable_clockin) : false,
+        clockin_pin: isEdit && user && user.clockin_pin ? String(user.clockin_pin) : '',
     })
 
     useEffect(() => {
@@ -65,6 +71,8 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                 currency: isEdit && user ? user.currency : (currencies[0]?.code ?? 'USD'),
                 non_monetary: isEdit && user ? user.non_monetary : false,
                 is_employee: isEdit && user ? user.is_employee : false,
+                enable_clockin: isEdit && user ? Boolean(user.enable_clockin) : false,
+                clockin_pin: isEdit && user && user.clockin_pin ? String(user.clockin_pin) : '',
             })
         }
     }, [open, mode, user])
@@ -102,8 +110,23 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
     useEffect(() => {
         if (isEmployeeDisabled && data.is_employee) {
             setData('is_employee', false)
+            setData('enable_clockin', false)
+            setData('clockin_pin', '')
         }
     }, [isEmployeeDisabled])
+
+    useEffect(() => {
+        if (!data.is_employee) {
+            if (data.enable_clockin) setData('enable_clockin', false)
+            if (data.clockin_pin) setData('clockin_pin', '')
+        }
+    }, [data.is_employee])
+
+    useEffect(() => {
+        if (!data.enable_clockin && data.clockin_pin) {
+            setData('clockin_pin', '')
+        }
+    }, [data.enable_clockin])
 
     return (
         <Sheet open={open} onOpenChange={(val) => !val && onClose()}>
@@ -313,6 +336,69 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                                     </div>
                                 )}
                             </div>
+
+                            {Boolean(data.is_employee) && (
+                                <div className="space-y-5 pt-2">
+                                    <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Clock-in Settings</h3>
+
+                                    <div className="flex items-center gap-3 rounded-md border border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/30">
+                                        <div className="flex h-5 items-center">
+                                            <Checkbox
+                                                id="enable_clockin"
+                                                checked={Boolean(data.enable_clockin)}
+                                                onCheckedChange={(checked) => {
+                                                    const val = Boolean(checked)
+                                                    setData('enable_clockin', val)
+                                                    if (!val) {
+                                                        setData('clockin_pin', '')
+                                                    }
+                                                }}
+                                                disabled={processing}
+                                                className="border-neutral-300 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800"
+                                            />
+                                        </div>
+                                        <div className="space-y-1 leading-none">
+                                            <Label htmlFor="enable_clockin" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Enable Clock-in
+                                            </Label>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                Allow this employee to clock in with a 4-digit PIN
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {Boolean(data.enable_clockin) && (
+                                        <div className="space-y-2">
+                                            <Label htmlFor="clockin_pin" className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                Clock-in PIN
+                                            </Label>
+                                            <div className="relative">
+                                                <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                                                    <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                                </div>
+                                                <Input
+                                                    id="clockin_pin"
+                                                    type="password"
+                                                    inputMode="numeric"
+                                                    pattern="[0-9]*"
+                                                    autoComplete="one-time-code"
+                                                    maxLength={4}
+                                                    tabIndex={5}
+                                                    value={data.clockin_pin}
+                                                    onChange={(e) => {
+                                                        const digitsOnly = e.target.value.replace(/\D+/g, '')
+                                                        setData('clockin_pin', digitsOnly.slice(0, 4))
+                                                    }}
+                                                    disabled={processing}
+                                                    placeholder="0000"
+                                                    className="border-neutral-200 bg-white pl-10 tracking-widest ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
+                                                />
+                                            </div>
+                                            <InputError message={errors.clockin_pin} />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             <div className="mt-6 flex justify-end gap-3 border-t border-neutral-200 pt-6 dark:border-neutral-800">
                                 <Button
