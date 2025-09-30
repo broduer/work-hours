@@ -418,6 +418,7 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                                             <div className="mt-4 space-y-2">
                                                 <Label htmlFor="clockout_duration" className="text-xs font-medium text-gray-600 dark:text-gray-400">
                                                     Clock-out Duration (hours)
+                                                    <small className={'ml-2'}>System will auto clockout employee after this duration.</small>
                                                 </Label>
                                                 <div className="relative">
                                                     <Input
