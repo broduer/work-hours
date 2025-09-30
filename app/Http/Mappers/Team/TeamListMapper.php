@@ -37,6 +37,7 @@ final class TeamListMapper
             'is_employee' => (bool) ($team->is_employee ?? false),
             'enable_clockin' => (bool) ($team->enable_clockin ?? false),
             'clockin_pin' => $team->clockin_pin,
+            'clockout_duration' => $team->clockout_duration,
             'totalHours' => $totalDuration,
             'weeklyAverage' => $weeklyAverage,
             'unpaidHours' => $unpaidHours,

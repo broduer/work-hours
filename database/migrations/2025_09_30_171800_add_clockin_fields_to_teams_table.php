@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::table('teams', function (Blueprint $table): void {
             $table->boolean('enable_clockin')->default(false)->after('is_employee');
             $table->string('clockin_pin', 4)->nullable()->after('enable_clockin');
+            $table->float('clockout_duration')->nullable()->after('clockin_pin');
 
             $table->unique(['user_id', 'clockin_pin']);
         });

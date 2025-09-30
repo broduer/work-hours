@@ -27,6 +27,7 @@ export default function Team({ teamMembers, filters, currencies, genericEmails }
         is_employee: boolean
         enable_clockin?: boolean
         clockin_pin?: string | null
+        clockout_duration?: number | null
     } | null>(null)
     const [filtersOpen, setFiltersOpen] = useState(false)
 
@@ -38,7 +39,7 @@ export default function Team({ teamMembers, filters, currencies, genericEmails }
                 setEditUser(null)
                 setOffOpen(true)
             }
-        } catch 
+        } catch
     }, [])
 
     return (
@@ -207,6 +208,7 @@ export default function Team({ teamMembers, filters, currencies, genericEmails }
                                                                         is_employee: member.is_employee ?? false,
                                                                         enable_clockin: member.enable_clockin ?? false,
                                                                         clockin_pin: member.clockin_pin ?? '',
+                                                                        clockout_duration: member.clockout_duration ?? null,
                                                                     })
                                                                     setOffOpen(true)
                                                                 }}

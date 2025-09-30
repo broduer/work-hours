@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[UsePolicy(TeamPolicy::class)]
 final class Team extends Model
 {
-    protected $fillable = ['user_id', 'member_id', 'hourly_rate', 'currency', 'non_monetary', 'is_employee', 'enable_clockin', 'clockin_pin'];
+    protected $fillable = ['user_id', 'member_id', 'hourly_rate', 'currency', 'non_monetary', 'is_employee', 'enable_clockin', 'clockin_pin', 'clockout_duration'];
 
     public static function memberHourlyRate(Project $project, int $memberId): float
     {
@@ -86,6 +86,7 @@ final class Team extends Model
             'non_monetary' => 'boolean',
             'is_employee' => 'boolean',
             'enable_clockin' => 'boolean',
+            'clockout_duration' => 'float',
         ];
     }
 }

@@ -41,6 +41,7 @@ final class TeamStore
                 'is_employee' => (bool) ($team->is_employee ?? false),
                 'enable_clockin' => (bool) ($team->enable_clockin ?? false),
                 'clockin_pin' => $team->clockin_pin,
+                'clockout_duration' => $team->clockout_duration,
             ]);
         }
 
@@ -73,8 +74,9 @@ final class TeamStore
         bool $isEmployee,
         bool $enableClockin = false,
         ?string $clockinPin = null,
+        ?float $clockoutDuration = null,
     ): array {
-        return DB::transaction(function () use ($ownerUserId, $userData, $hourlyRate, $currency, $nonMonetary, $isEmployee, $enableClockin, $clockinPin): array {
+        return DB::transaction(function () use ($ownerUserId, $userData, $hourlyRate, $currency, $nonMonetary, $isEmployee, $enableClockin, $clockinPin, $clockoutDuration): array {
             $user = User::query()->where('email', $userData['email'])->first();
             $isNewUser = false;
 
@@ -108,6 +110,7 @@ final class TeamStore
                     'is_employee' => $isEmployee,
                     'enable_clockin' => $finalEnableClockin,
                     'clockin_pin' => $finalEnableClockin ? $sanitizedPin : null,
+                    'clockout_duration' => $finalEnableClockin ? $clockoutDuration : null,
                 ]
             );
 
@@ -149,6 +152,7 @@ final class TeamStore
 
             $enableClockin = isset($data['enable_clockin']) && (bool) $data['enable_clockin'];
             $clockinPin = $data['clockin_pin'] ?? null;
+            $clockoutDuration = array_key_exists('clockout_duration', $data) ? ($data['clockout_duration'] !== null ? (float) $data['clockout_duration'] : null) : null;
             $finalEnableClockin = $isEmployee && $enableClockin;
             $sanitizedPin = null;
             if ($finalEnableClockin && $clockinPin !== null) {
@@ -166,9 +170,10 @@ final class TeamStore
                 'is_employee' => $isEmployee,
                 'enable_clockin' => $finalEnableClockin,
                 'clockin_pin' => $finalEnableClockin ? $sanitizedPin : null,
+                'clockout_duration' => $finalEnableClockin ? $clockoutDuration : null,
             ];
 
-            unset($data['hourly_rate'], $data['currency'], $data['non_monetary'], $data['is_employee'], $data['enable_clockin'], $data['clockin_pin']);
+            unset($data['hourly_rate'], $data['currency'], $data['non_monetary'], $data['is_employee'], $data['enable_clockin'], $data['clockin_pin'], $data['clockout_duration']);
 
             $memberUser->update($data);
 

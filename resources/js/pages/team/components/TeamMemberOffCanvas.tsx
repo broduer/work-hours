@@ -29,6 +29,7 @@ export type TeamMemberOffCanvasProps = {
         is_employee: boolean
         enable_clockin?: boolean
         clockin_pin?: string | null
+        clockout_duration?: number | null
     }
 }
 
@@ -42,6 +43,7 @@ type TeamMemberForm = {
     is_employee: boolean
     enable_clockin: boolean
     clockin_pin: string
+    clockout_duration: number | string | null
 }
 
 export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, genericEmails, user }: TeamMemberOffCanvasProps) {
@@ -59,6 +61,7 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
         is_employee: isEdit && user ? user.is_employee : false,
         enable_clockin: isEdit && user ? Boolean(user.enable_clockin) : false,
         clockin_pin: isEdit && user && user.clockin_pin ? String(user.clockin_pin) : '',
+        clockout_duration: isEdit && user && user.clockout_duration != null ? user.clockout_duration : null,
     })
 
     useEffect(() => {
@@ -75,6 +78,7 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                 is_employee: isEdit && user ? user.is_employee : false,
                 enable_clockin: isEdit && user ? Boolean(user.enable_clockin) : false,
                 clockin_pin: isEdit && user && user.clockin_pin ? String(user.clockin_pin) : '',
+                clockout_duration: isEdit && user && user.clockout_duration != null ? user.clockout_duration : null,
             })
         }
     }, [open, mode, user])
@@ -121,12 +125,14 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
         if (!data.is_employee) {
             if (data.enable_clockin) setData('enable_clockin', false)
             if (data.clockin_pin) setData('clockin_pin', '')
+            if (data.clockout_duration != null) setData('clockout_duration', null)
         }
     }, [data.is_employee])
 
     useEffect(() => {
-        if (!data.enable_clockin && data.clockin_pin) {
-            setData('clockin_pin', '')
+        if (!data.enable_clockin) {
+            if (data.clockin_pin) setData('clockin_pin', '')
+            if (data.clockout_duration != null) setData('clockout_duration', null)
         }
     }, [data.enable_clockin])
 
@@ -370,43 +376,74 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                                     </div>
 
                                     {Boolean(data.enable_clockin) && (
-                                        <div className="space-y-2">
-                                            <Label htmlFor="clockin_pin" className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                                Clock-in PIN
-                                            </Label>
-                                            <div className="relative">
-                                                <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                                                    <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                        <>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="clockin_pin" className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                    Clock-in PIN
+                                                </Label>
+                                                <div className="relative">
+                                                    <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                                                        <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                                    </div>
+                                                    <Input
+                                                        id="clockin_pin"
+                                                        type={showPin ? 'text' : 'password'}
+                                                        inputMode="numeric"
+                                                        pattern="[0-9]*"
+                                                        autoComplete="one-time-code"
+                                                        maxLength={4}
+                                                        tabIndex={5}
+                                                        value={data.clockin_pin}
+                                                        onChange={(e) => {
+                                                            const digitsOnly = e.target.value.replace(/\D+/g, '')
+                                                            setData('clockin_pin', digitsOnly.slice(0, 4))
+                                                        }}
+                                                        disabled={processing}
+                                                        placeholder="0000"
+                                                        className="border-neutral-200 bg-white pr-10 pl-10 tracking-widest ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
+                                                        onClick={() => setShowPin((s) => !s)}
+                                                        className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                                        tabIndex={-1}
+                                                    >
+                                                        {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                    </button>
                                                 </div>
-                                                <Input
-                                                    id="clockin_pin"
-                                                    type={showPin ? 'text' : 'password'}
-                                                    inputMode="numeric"
-                                                    pattern="[0-9]*"
-                                                    autoComplete="one-time-code"
-                                                    maxLength={4}
-                                                    tabIndex={5}
-                                                    value={data.clockin_pin}
-                                                    onChange={(e) => {
-                                                        const digitsOnly = e.target.value.replace(/\D+/g, '')
-                                                        setData('clockin_pin', digitsOnly.slice(0, 4))
-                                                    }}
-                                                    disabled={processing}
-                                                    placeholder="0000"
-                                                    className="border-neutral-200 bg-white pr-10 pl-10 tracking-widest ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
-                                                    onClick={() => setShowPin((s) => !s)}
-                                                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                                                    tabIndex={-1}
-                                                >
-                                                    {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                                </button>
+                                                <InputError message={errors.clockin_pin} />
                                             </div>
-                                            <InputError message={errors.clockin_pin} />
-                                        </div>
+
+                                            <div className="mt-4 space-y-2">
+                                                <Label htmlFor="clockout_duration" className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                    Clock-out Duration (hours)
+                                                </Label>
+                                                <div className="relative">
+                                                    <Input
+                                                        id="clockout_duration"
+                                                        type="number"
+                                                        inputMode="decimal"
+                                                        min="0"
+                                                        step="0.1"
+                                                        tabIndex={6}
+                                                        value={data.clockout_duration === null ? '' : data.clockout_duration}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value
+                                                            if (val === '') {
+                                                                setData('clockout_duration', null)
+                                                            } else {
+                                                                setData('clockout_duration', Number(val))
+                                                            }
+                                                        }}
+                                                        disabled={processing}
+                                                        placeholder="e.g. 0.5"
+                                                        className="border-neutral-200 bg-white pr-10 ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
+                                                    />
+                                                </div>
+                                                <InputError message={errors.clockout_duration as unknown as string} />
+                                            </div>
+                                        </>
                                     )}
                                 </div>
                             )}

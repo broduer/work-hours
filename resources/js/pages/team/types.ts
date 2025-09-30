@@ -10,6 +10,7 @@ export type TeamMember = {
     is_employee: boolean
     enable_clockin?: boolean
     clockin_pin?: string | null
+    clockout_duration?: number | null
     totalHours: number
     weeklyAverage: number
     unpaidHours: number

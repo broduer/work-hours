@@ -54,7 +54,7 @@ final class TeamController extends Controller
     #[Action(method: 'post', name: 'team.store', middleware: ['auth', 'verified'])]
     public function store(StoreTeamMemberRequest $request): void
     {
-        $userData = $request->safe()->except(['hourly_rate', 'currency', 'non_monetary', 'is_employee', 'enable_clockin', 'clockin_pin']);
+        $userData = $request->safe()->except(['hourly_rate', 'currency', 'non_monetary', 'is_employee', 'enable_clockin', 'clockin_pin', 'clockout_duration']);
         $nonMonetary = $request->boolean('non_monetary', false);
         $isEmployee = $request->boolean('is_employee', false);
         $enableClockin = $request->boolean('enable_clockin', false);
@@ -69,6 +69,7 @@ final class TeamController extends Controller
             isEmployee: $isEmployee,
             enableClockin: $enableClockin,
             clockinPin: $clockinPin,
+            clockoutDuration: $request->has('clockout_duration') ? (float) $request->get('clockout_duration') : null,
         );
 
         $user = $result['user'];
