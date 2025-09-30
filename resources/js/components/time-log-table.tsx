@@ -2,13 +2,13 @@ import TimeLogDeleteAction from '@/components/time-log-delete-action'
 import TimeLogDetailsSheet from '@/components/time-log-details-sheet'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableHeaderRow, TableRow } from '@/components/ui/table'
 import { formatTimeEntry } from '@/lib/utils'
 import { Link, router } from '@inertiajs/react'
 import { Edit, Glasses, MoreVertical, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 export type TimeLogEntry = {
     id: number
@@ -152,7 +152,7 @@ export default function TimeLogTable({
                                                 setTargetLogId(log.id)
                                                 setConfirmOpen(true)
                                             }}
-                                            className="bg-indigo-100 text-[10px] font-medium text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100 cursor-pointer"
+                                            className="cursor-pointer bg-indigo-100 text-[10px] font-medium text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100"
                                             title="Click to mark un-invoiced"
                                         >
                                             Invoiced
@@ -305,18 +305,24 @@ export default function TimeLogTable({
                         <DialogDescription>Mark the time log un-invoiced.</DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+                        <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+                            Cancel
+                        </Button>
                         <Button
                             variant="destructive"
                             onClick={() => {
                                 if (targetLogId) {
-                                    router.post(route('time-log.uninvoice', targetLogId), {}, {
-                                        onFinish: () => {
-                                            setConfirmOpen(false)
-                                            setTargetLogId(null)
-                                            router.reload()
+                                    router.post(
+                                        route('time-log.uninvoice', targetLogId),
+                                        {},
+                                        {
+                                            onFinish: () => {
+                                                setConfirmOpen(false)
+                                                setTargetLogId(null)
+                                                router.reload()
+                                            },
                                         },
-                                    })
+                                    )
                                 }
                             }}
                         >
