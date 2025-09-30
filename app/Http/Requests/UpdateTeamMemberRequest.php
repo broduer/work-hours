@@ -38,7 +38,7 @@ final class UpdateTeamMemberRequest extends FormRequest
             'clockin_pin' => ['nullable', 'digits:4', 'required_if:enable_clockin,true', Rule::unique('teams', 'clockin_pin')->where(fn ($q) => $q
                 ->where('user_id', auth()->id())
                 ->where('member_id', '!=', optional($this->route('user'))->getKey()))],
-            'clockout_duration' => ['nullable', 'numeric', 'min:0'],
+            'clockout_duration' => ['nullable', 'numeric', 'min:0', 'required_if:enable_clockin,true'],
         ];
     }
 }

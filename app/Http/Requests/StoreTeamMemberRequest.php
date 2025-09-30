@@ -37,7 +37,7 @@ final class StoreTeamMemberRequest extends FormRequest
             'is_employee' => ['sometimes', 'boolean'],
             'enable_clockin' => ['sometimes', 'boolean'],
             'clockin_pin' => ['nullable', 'digits:4', 'required_if:enable_clockin,true', Rule::unique('teams', 'clockin_pin')->where(fn ($q) => $q->where('user_id', auth()->id()))],
-            'clockout_duration' => ['nullable', 'numeric', 'min:0'],
+            'clockout_duration' => ['nullable', 'numeric', 'min:0', 'required_if:enable_clockin,true'],
         ];
     }
 
