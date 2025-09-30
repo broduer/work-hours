@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { router, useForm } from '@inertiajs/react'
-import { DollarSign, LoaderCircle, Lock, Mail, Save, User, UserPlus, Eye, EyeOff } from 'lucide-react'
+import { DollarSign, Eye, EyeOff, LoaderCircle, Lock, Mail, Save, User, UserPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -393,7 +393,7 @@ export default function TeamMemberOffCanvas({ open, mode, onClose, currencies, g
                                                     }}
                                                     disabled={processing}
                                                     placeholder="0000"
-                                                    className="border-neutral-200 bg-white pl-10 pr-10 tracking-widest ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
+                                                    className="border-neutral-200 bg-white pr-10 pl-10 tracking-widest ring-offset-white focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-800/50 dark:ring-offset-neutral-900 dark:focus-visible:ring-neutral-600"
                                                 />
                                                 <button
                                                     type="button"

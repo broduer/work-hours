@@ -35,7 +35,9 @@ final class UpdateTeamMemberRequest extends FormRequest
             'non_monetary' => ['sometimes', 'boolean'],
             'is_employee' => ['sometimes', 'boolean'],
             'enable_clockin' => ['sometimes', 'boolean'],
-            'clockin_pin' => ['nullable', 'digits:4', 'required_if:enable_clockin,true'],
+            'clockin_pin' => ['nullable', 'digits:4', 'required_if:enable_clockin,true', Rule::unique('teams', 'clockin_pin')->where(fn ($q) => $q
+                            ->where('user_id', auth()->id())
+                            ->where('member_id', '!=', optional($this->route('user'))->getKey()))],
         ];
     }
 }

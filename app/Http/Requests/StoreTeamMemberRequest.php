@@ -7,6 +7,7 @@ namespace App\Http\Requests;
 use App\Rules\UnauthorizedEmailProviders;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 final class StoreTeamMemberRequest extends FormRequest
@@ -35,7 +36,7 @@ final class StoreTeamMemberRequest extends FormRequest
             'non_monetary' => ['sometimes', 'boolean'],
             'is_employee' => ['sometimes', 'boolean'],
             'enable_clockin' => ['sometimes', 'boolean'],
-            'clockin_pin' => ['nullable', 'digits:4', 'required_if:enable_clockin,true'],
+            'clockin_pin' => ['nullable', 'digits:4', 'required_if:enable_clockin,true', Rule::unique('teams', 'clockin_pin')->where(fn ($q) => $q->where('user_id', auth()->id()))],
         ];
     }
 

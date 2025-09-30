@@ -38,7 +38,7 @@ export default function Team({ teamMembers, filters, currencies, genericEmails }
                 setEditUser(null)
                 setOffOpen(true)
             }
-        } catch { /* noop */ }
+        } catch 
     }, [])
 
     return (
