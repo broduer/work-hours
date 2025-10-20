@@ -18,7 +18,7 @@ use App\Models\Tag;
 use App\Models\Team;
 use App\Models\TimeLog;
 use App\Models\User;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -27,9 +27,9 @@ use Illuminate\Support\Facades\Date;
 
 final class TimeLogStore
 {
-    public static function dailyTrend(array $teamMembersIds, int $userId, int $days = 7, ?Carbon $startDate = null, ?Carbon $endDate = null, ?int $projectOwnerId = null): array
+    public static function dailyTrend(array $teamMembersIds, int $userId, int $days = 7, ?CarbonInterface $startDate = null, ?CarbonInterface $endDate = null, ?int $projectOwnerId = null): array
     {
-        if ($startDate instanceof Carbon || $endDate instanceof Carbon) {
+        if ($startDate instanceof CarbonInterface || $endDate instanceof CarbonInterface) {
             $startDate = ($startDate ?? Date::today())->copy()->startOfDay();
             $endDate = ($endDate ?? Date::today())->copy()->endOfDay();
 

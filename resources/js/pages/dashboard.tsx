@@ -74,32 +74,44 @@ export default function Dashboard() {
     return (
         <MasterLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="relative mx-auto flex flex-col gap-4">
-                <div className="relative rounded-lg bg-white pl-6 dark:bg-gray-800">
-                    <WelcomeSection />
+            <div className="relative mx-auto flex flex-col gap-6">
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-md dark:from-gray-800 dark:to-gray-750">
+                    <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-blue-500/5 dark:bg-blue-600/5" aria-hidden="true"></div>
+                    <div className="absolute top-1/4 right-12 h-24 w-24 rounded-full bg-blue-500/10 dark:bg-blue-600/10" aria-hidden="true"></div>
+                    <div className="relative z-10">
+                        <WelcomeSection />
+                    </div>
                 </div>
 
                 {loading ? (
-                    <div className="relative rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+                    <div className="relative rounded-xl bg-white p-8 shadow-md transition-all dark:bg-gray-800">
                         <Loader message="Loading dashboard data..." className="h-40" />
                     </div>
                 ) : (
                     <>
                         <StatsCards teamStats={teamStats} />
 
-                        <DailyTrendSection />
+                        <div className="rounded-xl bg-white p-6 shadow-md transition-all hover:shadow-lg dark:bg-gray-800">
+                            <DailyTrendSection />
+                        </div>
 
-                        <section className="relative mb-4 rounded-lg bg-white p-6 dark:bg-gray-800">
-                            <div className="mb-4">
+                        <section className="relative mb-6 rounded-xl bg-white p-6 shadow-md transition-all hover:shadow-lg dark:bg-gray-800">
+                            <div className="mb-6">
                                 <div className="flex items-center">
-                                    <Clock className="mr-2 h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden="true" />
-                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Activity</h3>
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+                                        <Clock className="h-5 w-5" aria-hidden="true" />
+                                    </div>
+                                    <h3 className="ml-3 text-lg font-medium text-gray-800 dark:text-gray-200">Activity</h3>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                <HoursDistribution hoursData={hoursData} />
-                                <RecentTimeLogs />
+                            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                                <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                                    <HoursDistribution hoursData={hoursData} />
+                                </div>
+                                <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                                    <RecentTimeLogs />
+                                </div>
                             </div>
                         </section>
                     </>
