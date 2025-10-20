@@ -49,7 +49,7 @@ export default function DailyTrendSection() {
     }, [])
 
     return (
-        <section className="relative mb-4 rounded-lg bg-white p-6 dark:bg-gray-800">
+        <section className="relative mb-4 dark:bg-gray-800">
             <div className="mb-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">

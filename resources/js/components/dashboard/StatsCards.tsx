@@ -63,7 +63,7 @@ export default function StatsCards({ teamStats }: StatsCardsProps) {
     }
 
     return (
-        <section className="relative mb-2 overflow-hidden rounded-md bg-gray-50/80 p-4 backdrop-blur-sm dark:bg-gray-900/50">
+        <section className="relative mb-2 overflow-hidden rounded-md backdrop-blur-sm dark:bg-gray-900/50">
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                 {teamStats.count > 0 && (
                     <StatsCard title="Team Members" value={teamStats.count} icon={<Users className="stroke-blue-600" />} color="blue" />

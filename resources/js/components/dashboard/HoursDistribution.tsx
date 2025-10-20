@@ -12,7 +12,7 @@ export default function HoursDistribution({ hoursData }: { hoursData: Array<{ na
     }
 
     return (
-        <Card className="overflow-hidden bg-white shadow-sm transition-colors dark:bg-gray-800">
+        <Card className="overflow-hidden">
             <CardHeader className="border-b border-gray-100 p-4 dark:border-gray-700">
                 <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">Hours Distribution</CardTitle>
             </CardHeader>

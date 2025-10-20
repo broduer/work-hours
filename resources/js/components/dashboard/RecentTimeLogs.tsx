@@ -40,7 +40,7 @@ export default function RecentTimeLogs() {
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' } as const
 
     return (
-        <Card className="overflow-hidden bg-white shadow-sm transition-colors dark:bg-gray-800">
+        <Card className="overflow-hidden">
             <CardHeader className="border-b border-gray-100 p-4 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">Recent Time Logs</CardTitle>

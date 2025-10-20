@@ -91,27 +91,21 @@ export default function Dashboard() {
                     <>
                         <StatsCards teamStats={teamStats} />
 
-                        <div className="rounded-xl bg-white p-6 shadow-md transition-all hover:shadow-lg dark:bg-gray-800">
-                            <DailyTrendSection />
-                        </div>
+                        <DailyTrendSection />
 
-                        <section className="relative mb-6 rounded-xl bg-white p-6 shadow-md transition-all hover:shadow-lg dark:bg-gray-800">
-                            <div className="mb-6">
+                        <section className="">
+                            <div className="mb-3">
                                 <div className="flex items-center">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+                                    <div className="flex h-10 w-10 items-center justify-center">
                                         <Clock className="h-5 w-5" aria-hidden="true" />
                                     </div>
-                                    <h3 className="ml-3 text-lg font-medium text-gray-800 dark:text-gray-200">Activity</h3>
+                                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Activity</h3>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                                <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
-                                    <HoursDistribution hoursData={hoursData} />
-                                </div>
-                                <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
-                                    <RecentTimeLogs />
-                                </div>
+                                <HoursDistribution hoursData={hoursData} />
+                                <RecentTimeLogs />
                             </div>
                         </section>
                     </>

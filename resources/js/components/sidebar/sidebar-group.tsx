@@ -51,17 +51,18 @@ export function SidebarGroup({ title, icon: Icon, items, collapsed, approvalCoun
     }
 
     return (
-        <div className="mb-2">
+        <div className="mb-2.5">
             <button
                 type="button"
                 onClick={toggleExpand}
-                className={`group relative z-30 flex w-full cursor-pointer items-center rounded-md px-2 py-2 text-sm font-medium text-neutral-700 transition-all duration-200 hover:bg-white hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 ${anyItemActive ? 'font-medium' : ''}`}
+                className={`group relative z-30 flex w-full cursor-pointer items-center rounded-md px-3 py-2.5 text-sm font-medium text-neutral-700 transition-all duration-200 hover:bg-white/80 hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800/90 dark:hover:text-neutral-100 ${anyItemActive ? 'font-medium' : ''}`}
             >
                 <div className="relative">
                     {Icon && (
                         <Icon
                             className={`h-5 w-5 flex-shrink-0 text-neutral-500 transition-transform duration-200 group-hover:scale-110 dark:text-neutral-400 ${!collapsed ? 'mr-3' : ''}`}
                             aria-hidden="true"
+                            strokeWidth={2}
                         />
                     )}
 
@@ -88,8 +89,8 @@ export function SidebarGroup({ title, icon: Icon, items, collapsed, approvalCoun
             </button>
 
             {(collapsed || isExpanded) && (
-                <div className={`mt-1 space-y-1 ${collapsed ? '' : 'ml-4'} overflow-hidden transition-all duration-300`}>
-                    <TooltipProvider>
+                <div className={`mt-1.5 space-y-1.5 ${collapsed ? '' : 'ml-4'} overflow-hidden transition-all duration-300`}>
+                    <TooltipProvider delayDuration={300}>
                         {items.map((item) => {
                             const isActive =
                                 typeof window !== 'undefined' &&
@@ -99,10 +100,10 @@ export function SidebarGroup({ title, icon: Icon, items, collapsed, approvalCoun
                                 <div key={item.href} className="relative">
                                     <Link
                                         href={item.href}
-                                        className={`group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-200 ${
+                                        className={`group flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                                             isActive
-                                                ? 'bg-neutral-50 text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
-                                                : 'text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
+                                                ? 'bg-blue-50/80 text-blue-700 shadow-sm ring-1 ring-blue-100 dark:bg-neutral-800 dark:text-blue-300 dark:ring-neutral-700'
+                                                : 'text-neutral-700 hover:bg-neutral-50/90 hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800/90 dark:hover:text-neutral-100'
                                         }`}
                                     >
                                         <div className="relative">
@@ -110,8 +111,9 @@ export function SidebarGroup({ title, icon: Icon, items, collapsed, approvalCoun
                                                 <item.icon
                                                     className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${
                                                         !collapsed ? 'mr-3' : ''
-                                                    } ${isActive ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400'}`}
+                                                    } ${isActive ? 'text-blue-600 dark:text-blue-300' : 'text-neutral-500 dark:text-neutral-400'}`}
                                                     aria-hidden="true"
+                                                    strokeWidth={2}
                                                 />
                                             )}
                                             {item.href === '/time-log/approvals' && approvalCount > 0 && (
@@ -132,9 +134,7 @@ export function SidebarGroup({ title, icon: Icon, items, collapsed, approvalCoun
                                             )}
                                         </div>
                                         {!collapsed && <span>{item.title}</span>}
-                                        {isActive && (
-                                            <div className="absolute inset-y-0 left-0 w-1 rounded-r-md bg-neutral-600 dark:bg-neutral-400"></div>
-                                        )}
+                                        {isActive && <div className="absolute inset-y-0 left-0 w-1 rounded-r-md bg-blue-600 dark:bg-blue-400"></div>}
                                     </Link>
                                     {collapsed && (
                                         <Tooltip>
@@ -143,7 +143,8 @@ export function SidebarGroup({ title, icon: Icon, items, collapsed, approvalCoun
                                             </TooltipTrigger>
                                             <TooltipContent
                                                 side="right"
-                                                className="border-neutral-200 bg-white text-neutral-800 shadow-md dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                                                className="border-neutral-200 bg-white text-neutral-800 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                                                sideOffset={5}
                                             >
                                                 {item.title}
                                                 {item.href === '/time-log/approvals' && approvalCount > 0 && ` (${approvalCount})`}

@@ -104,34 +104,46 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                 collapsed ? 'w-20' : 'w-62'
             }`}
         >
-            <div className="absolute top-0 left-0 h-32 w-20 rounded-br-[6rem] bg-blue-500/5 dark:bg-blue-600/10" aria-hidden="true"></div>
-            <div className="absolute right-0 bottom-0 h-32 w-32 rounded-tl-[6rem] bg-indigo-500/5 dark:bg-indigo-600/10" aria-hidden="true"></div>
-            <div className="absolute top-1/3 right-4 h-16 w-16 rounded-full bg-blue-500/5 dark:bg-blue-600/10" aria-hidden="true"></div>
+            <div
+                className="absolute top-0 left-0 h-32 w-20 rounded-br-[6rem] bg-blue-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-blue-600/10"
+                aria-hidden="true"
+            ></div>
+            <div
+                className="absolute right-0 bottom-0 h-32 w-32 rounded-tl-[6rem] bg-indigo-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-indigo-600/10"
+                aria-hidden="true"
+            ></div>
+            <div
+                className="absolute top-1/3 right-4 h-16 w-16 rounded-full bg-blue-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-blue-600/10"
+                aria-hidden="true"
+            ></div>
 
             <div
-                className={`relative z-10 border-b border-neutral-200 transition-all duration-300 ease-in-out dark:border-neutral-700 ${
-                    collapsed ? 'flex flex-col items-center' : 'px-2'
+                className={`relative z-10 border-b border-neutral-200 py-4 transition-all duration-300 ease-in-out dark:border-neutral-700 ${
+                    collapsed ? 'flex flex-col items-center' : 'px-4'
                 }`}
             >
                 <div className={`flex w-full items-center ${collapsed ? 'flex-col justify-center' : ''}`}>
-                    <a href="/dashboard" className={`${collapsed ? 'mb-2 flex items-center justify-center p-1' : 'flex items-center'}`}>
+                    <a
+                        href="/dashboard"
+                        className={`${collapsed ? 'mb-2 flex items-center justify-center p-1 transition-transform hover:scale-105' : 'flex items-center transition-transform hover:scale-105'}`}
+                    >
                         {collapsed ? <AppLogoIcon className="h-12 w-24 text-neutral-700 dark:text-neutral-300" /> : <AppLogo />}
                     </a>
                 </div>
             </div>
 
-            <div className={`relative z-10 flex flex-1 flex-col overflow-y-auto pt-3 ${collapsed ? 'px-2' : 'px-4'}`}>
+            <div className={`relative z-10 flex flex-1 flex-col overflow-y-auto pt-4 ${collapsed ? 'px-2' : 'px-4'}`}>
                 {!isEmployee && (
-                    <div className="mb-3">
-                        <TooltipProvider>
+                    <div className="mb-4">
+                        <TooltipProvider delayDuration={300}>
                             <div className="relative">
                                 <Link
                                     href="/dashboard"
-                                    className={`group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-200 ${
+                                    className={`group flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                                         typeof window !== 'undefined' &&
                                         (window.location.pathname === '/dashboard' || window.location.pathname.startsWith('/dashboard/'))
-                                            ? 'bg-neutral-50 text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
-                                            : 'text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
+                                            ? 'bg-blue-50/80 text-blue-700 shadow-sm ring-1 ring-blue-100 dark:bg-neutral-800 dark:text-blue-300 dark:ring-neutral-700'
+                                            : 'text-neutral-700 hover:bg-neutral-50/90 hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800/90 dark:hover:text-neutral-100'
                                     }`}
                                 >
                                     <div className="relative">
@@ -139,16 +151,17 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                                             className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${
                                                 typeof window !== 'undefined' &&
                                                 (window.location.pathname === '/dashboard' || window.location.pathname.startsWith('/dashboard/'))
-                                                    ? 'text-neutral-900 dark:text-neutral-100'
+                                                    ? 'text-blue-600 dark:text-blue-300'
                                                     : 'text-neutral-500 dark:text-neutral-400'
                                             } ${!collapsed ? 'mr-3' : ''}`}
                                             aria-hidden="true"
+                                            strokeWidth={2}
                                         />
                                     </div>
                                     {!collapsed && <span>Dashboard</span>}
                                     {typeof window !== 'undefined' &&
                                         (window.location.pathname === '/dashboard' || window.location.pathname.startsWith('/dashboard/')) && (
-                                            <div className="absolute inset-y-0 left-0 w-1 rounded-r-md bg-neutral-600 dark:bg-neutral-400"></div>
+                                            <div className="absolute inset-y-0 left-0 w-1 rounded-r-md bg-blue-600 dark:bg-blue-400"></div>
                                         )}
                                 </Link>
                                 {collapsed && (
@@ -158,7 +171,8 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                                         </TooltipTrigger>
                                         <TooltipContent
                                             side="right"
-                                            className="border-neutral-200 bg-white text-neutral-800 shadow-md dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                                            className="border-neutral-200 bg-white text-neutral-800 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                                            sideOffset={5}
                                         >
                                             Dashboard
                                         </TooltipContent>
@@ -169,19 +183,19 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                     </div>
                 )}
 
-                <div className="mb-6">
+                <div className="mb-8">
                     {!isEmployee ? (
                         <>
-                            <div className="mb-3 pb-2">
+                            <div className="mb-4 pb-1">
                                 <h3
-                                    className={`text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400 ${
+                                    className={`text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400 ${
                                         collapsed ? 'text-center' : 'px-2'
                                     }`}
                                 >
                                     {collapsed ? 'Menu' : 'Platform'}
                                 </h3>
                             </div>
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                                 {navGroups.map((group) => (
                                     <SidebarGroup
                                         key={group.title}
@@ -196,7 +210,7 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                             </div>
                         </>
                     ) : (
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             {employeeItems.map((item) => {
                                 const isActive =
                                     typeof window !== 'undefined' &&
@@ -207,21 +221,22 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                                     <div key={item.href} className="relative">
                                         <Link
                                             href={item.href}
-                                            className={`group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-all duration-200 ${
+                                            className={`group flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                                                 isActive
-                                                    ? 'bg-neutral-50 text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
-                                                    : 'text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
+                                                    ? 'bg-blue-50/80 text-blue-700 shadow-sm ring-1 ring-blue-100 dark:bg-neutral-800 dark:text-blue-300 dark:ring-neutral-700'
+                                                    : 'text-neutral-700 hover:bg-neutral-50/90 hover:text-neutral-900 hover:shadow-sm dark:text-neutral-300 dark:hover:bg-neutral-800/90 dark:hover:text-neutral-100'
                                             }`}
                                         >
                                             <Icon
                                                 className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${
                                                     !collapsed ? 'mr-3' : ''
-                                                } ${isActive ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-400'}`}
+                                                } ${isActive ? 'text-blue-600 dark:text-blue-300' : 'text-neutral-500 dark:text-neutral-400'}`}
                                                 aria-hidden="true"
+                                                strokeWidth={2}
                                             />
                                             {!collapsed && <span>{item.title}</span>}
                                             {isActive && (
-                                                <div className="absolute inset-y-0 left-0 w-1 rounded-r-md bg-neutral-600 dark:bg-neutral-400"></div>
+                                                <div className="absolute inset-y-0 left-0 w-1 rounded-r-md bg-blue-600 dark:bg-blue-400"></div>
                                             )}
                                         </Link>
                                     </div>
