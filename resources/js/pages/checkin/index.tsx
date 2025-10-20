@@ -13,6 +13,7 @@ import type { User } from '@/types'
 import { Head, router } from '@inertiajs/react'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { KeyboardEvent, useEffect, useRef, useState, type FormEvent } from 'react'
+import AppLogoIcon from '@/components/app-logo-icon'
 
 interface TodayEntry {
     type: 'clockin' | 'breaks'
@@ -196,18 +197,7 @@ export default function CheckIn({
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <div className="flex items-center space-x-3">
                             <div className="rounded-full bg-white/90 p-1.5 dark:bg-gray-800/90">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 text-blue-700 dark:text-blue-400"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                              <AppLogoIcon className={"h-4 w-4 text-blue-600 dark:text-blue-400"} />
                             </div>
                             <h1 className="text-lg font-semibold text-white">Work Hours</h1>
                         </div>
@@ -317,7 +307,7 @@ export default function CheckIn({
                                             <button
                                                 type="button"
                                                 onClick={() => setDetailsOpen(true)}
-                                                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-700 dark:hover:bg-blue-600"
+                                                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-700 dark:hover:bg-blue-600 cursor-pointer"
                                             >
                                                 Details
                                             </button>
@@ -431,7 +421,7 @@ export default function CheckIn({
                                                         },
                                                     )
                                                 }
-                                                className="group flex flex-col items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow-sm transition hover:bg-amber-100 hover:shadow-md dark:border-amber-900/40 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
+                                                className="group flex flex-col items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow-sm transition hover:bg-amber-100 hover:shadow-md dark:border-amber-900/40 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 cursor-pointer"
                                             >
                                                 <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-amber-600 text-2xl text-white shadow-md transition-transform group-hover:scale-110 dark:from-amber-600 dark:to-amber-700">
                                                     ☕
@@ -458,7 +448,7 @@ export default function CheckIn({
                                                         },
                                                     )
                                                 }
-                                                className="group flex flex-col items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left shadow-sm transition hover:bg-emerald-100 hover:shadow-md dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30"
+                                                className="group flex flex-col items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left shadow-sm transition hover:bg-emerald-100 hover:shadow-md dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 cursor-pointer"
                                             >
                                                 <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 text-2xl text-white shadow-md transition-transform group-hover:scale-110 dark:from-emerald-600 dark:to-emerald-700">
                                                     ▶
@@ -473,7 +463,7 @@ export default function CheckIn({
                                         <button
                                             type="button"
                                             onClick={() => setConfirmOpen(true)}
-                                            className="group flex flex-col items-center justify-center rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow-sm transition hover:bg-red-100 hover:shadow-md dark:border-red-900/40 dark:bg-red-900/20 dark:hover:bg-red-900/30"
+                                            className="group flex flex-col items-center justify-center rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow-sm transition hover:bg-red-100 hover:shadow-md dark:border-red-900/40 dark:bg-red-900/20 dark:hover:bg-red-900/30 cursor-pointer"
                                         >
                                             <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-2xl text-white shadow-md transition-transform group-hover:scale-110 dark:from-red-600 dark:to-red-700">
                                                 ⏻
@@ -564,7 +554,7 @@ export default function CheckIn({
                                                     <button
                                                         type="button"
                                                         onClick={resetPin}
-                                                        className="flex-1 rounded-xl border-2 border-gray-300 bg-white px-4 py-3.5 text-center text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:ring-2 focus:ring-gray-200 focus:outline-none active:scale-95 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/70"
+                                                        className="flex-1 rounded-xl border-2 border-gray-300 bg-white px-4 py-3.5 text-center text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:ring-2 focus:ring-gray-200 focus:outline-none active:scale-95 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/70 cursor-pointer"
                                                     >
                                                         Clear
                                                     </button>
@@ -573,7 +563,7 @@ export default function CheckIn({
                                                         className={`group relative flex-[2] overflow-hidden rounded-xl px-4 py-3.5 text-center text-white shadow-lg transition-all duration-300 focus:ring-4 focus:outline-none ${
                                                             !isPinComplete || isSubmitting
                                                                 ? 'cursor-not-allowed bg-blue-600/70 dark:bg-blue-700/70'
-                                                                : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-700 dark:to-blue-800'
+                                                                : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-700 dark:to-blue-800 cursor-pointer'
                                                         } ${isSubmitting ? 'animate-pulse' : ''} active:scale-97.5 hover:shadow-xl`}
                                                         disabled={!isPinComplete || isSubmitting || !!startedAt}
                                                     >

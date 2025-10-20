@@ -20,7 +20,7 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
                         <div className="relative flex items-center">
                             <Link
                                 href={route('dashboard')}
-                                className="rounded-md p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-400"
+                                className="rounded-md p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-400 cursor-pointer"
                             >
                                 <Home className="h-5 w-5" />
                             </Link>
@@ -56,7 +56,7 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
 
                         <Link
                             href="/calendar"
-                            className="relative flex items-center rounded-md p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-400"
+                            className="relative flex items-center rounded-md p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-400 cursor-pointer"
                             aria-label="View calendar"
                         >
                             <svg
