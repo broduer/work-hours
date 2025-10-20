@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckInPinRequest;
+use App\Models\Attendance;
 use App\Models\Team;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,6 +24,22 @@ final class CheckInController extends Controller
             ->where('is_employee', true)
             ->first();
 
+        $openAttendance = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'clockin')
+            ->whereNull('end_time')
+            ->latest('id')
+            ->first();
+
+        $checkedInAt = null;
+        if ($openAttendance) {
+            $base = Date::parse($openAttendance->date);
+            if (! empty($openAttendance->start_time)) {
+                $base = $base->copy()->setTimeFromTimeString($openAttendance->start_time);
+            }
+            $checkedInAt = $base->toAtomString();
+        }
+
         return Inertia::render('checkin/index', [
             'user' => [
                 'id' => $user->id,
@@ -33,6 +51,7 @@ final class CheckInController extends Controller
                 'name' => $team->user->name,
                 'email' => $team->user->email,
             ] : null,
+            'checkedInAt' => $checkedInAt,
         ]);
     }
 
@@ -53,7 +72,25 @@ final class CheckInController extends Controller
         $pin = $request->validated('pin');
 
         if ($team->clockin_pin !== $pin) {
-            return to_route('checkin.index')->with('error', 'Invalid PIN.');
+            return back()->withErrors(['pin' => 'Invalid PIN.']);
+        }
+
+        // Create attendance entry if none open
+        $existsOpen = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'clockin')
+            ->whereNull('end_time')
+            ->exists();
+
+        $now = now();
+        if (! $existsOpen) {
+            Attendance::query()->create([
+                'user_id' => $user->id,
+                'type' => 'clockin',
+                'date' => $now->toDateString(),
+                'start_time' => $now->format('H:i:s'),
+                'end_time' => null,
+            ]);
         }
 
         return to_route('checkin.index')->with('success', 'Checked in successfully.');

@@ -6,12 +6,15 @@ import { KeyboardEvent, useEffect, useRef, useState, type FormEvent } from 'reac
 interface CheckInProps {
     user: User
     employer: User | null
+    checkedInAt?: string | null
 }
 
-export default function CheckIn({ user, employer }: CheckInProps) {
+export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
     const [pin, setPin] = useState(['', '', '', ''])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
+    const [startedAt, setStartedAt] = useState<Date | null>(checkedInAt ? new Date(checkedInAt) : null)
+    const [elapsed, setElapsed] = useState<number>(0)
     const inputRefs = useRef<(HTMLInputElement | null)[]>([null, null, null, null])
     const today = new Date()
     const currentDate = today.toLocaleDateString('en-US', {
@@ -32,6 +35,25 @@ export default function CheckIn({ user, employer }: CheckInProps) {
     useEffect(() => {
         inputRefs.current[0]?.focus()
     }, [])
+
+    useEffect(() => {
+        if (!startedAt) return
+        const tick = () => {
+            const seconds = Math.max(0, Math.floor((Date.now() - startedAt.getTime()) / 1000))
+            setElapsed(seconds)
+        }
+        tick()
+        const id = setInterval(tick, 1000)
+        return () => clearInterval(id)
+    }, [startedAt])
+
+    const formatElapsed = (totalSeconds: number) => {
+        const hrs = Math.floor(totalSeconds / 3600)
+        const mins = Math.floor((totalSeconds % 3600) / 60)
+        const secs = totalSeconds % 60
+        const pad = (n: number) => n.toString().padStart(2, '0')
+        return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`
+    }
 
     const handleChange = (index: number, value: string) => {
         if (!/^\d?$/.test(value)) return
@@ -86,10 +108,14 @@ export default function CheckIn({ user, employer }: CheckInProps) {
             route('checkin.store'),
             { pin: code },
             {
-                onError: () => {
-                    setError('Invalid PIN. Please try again.')
+                onError: (errors: Record<string, string>) => {
+                    const message = errors?.pin || 'Invalid PIN. Please try again.'
+                    setError(message)
                     setIsSubmitting(false)
                     resetPin()
+                },
+                onSuccess: () => {
+                    setStartedAt(new Date())
                 },
                 onFinish: () => {
                     setIsSubmitting(false)
@@ -196,6 +222,14 @@ export default function CheckIn({ user, employer }: CheckInProps) {
                             ></div>
 
                             <div className="relative z-10 w-full max-w-md">
+                                {startedAt && (
+                                    <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-center shadow-sm dark:border-green-900/40 dark:bg-green-900/20">
+                                        <p className="text-sm font-medium text-green-800 dark:text-green-300">Checked in</p>
+                                        <p className="mt-1 text-3xl font-mono tabular-nums text-green-700 dark:text-green-200">
+                                            {formatElapsed(elapsed)}
+                                        </p>
+                                    </div>
+                                )}
                                 <div className="mb-3 rounded-2xl bg-white p-8 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-800">
                                     <form id="pin-form" onSubmit={handleSubmit} className="space-y-8">
                                         <div className="text-center">
@@ -233,7 +267,8 @@ export default function CheckIn({ user, employer }: CheckInProps) {
                                                             onChange={(e) => handleChange(i, e.target.value)}
                                                             onKeyDown={(e) => handleKeyDown(i, e)}
                                                             aria-label={`PIN digit ${i + 1}`}
-                                                            className={`h-16 w-16 rounded-xl border-2 bg-white text-center text-2xl tracking-widest text-gray-900 shadow-sm transition-all duration-300 outline-none ${value ? 'border-blue-500 dark:border-blue-600' : 'border-gray-300 dark:border-gray-700'} group-hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-200/50 md:h-20 md:w-20 md:text-3xl dark:bg-gray-800 dark:text-gray-100 dark:group-hover:border-blue-700 dark:focus:ring-blue-800/30`}
+                                                            disabled={!!startedAt || isSubmitting}
+                                                            className={`h-16 w-16 rounded-xl border-2 bg-white text-center text-2xl tracking-widest text-gray-900 shadow-sm transition-all duration-300 outline-none ${value ? 'border-blue-500 dark:border-blue-600' : 'border-gray-300 dark:border-gray-700'} group-hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-200/50 md:h-20 md:w-20 md:text-3xl dark:bg-gray-800 dark:text-gray-100 dark:group-hover:border-blue-700 dark:focus:ring-blue-800/30 disabled:opacity-50`}
                                                         />
                                                         {value && (
                                                             <div
@@ -280,7 +315,7 @@ export default function CheckIn({ user, employer }: CheckInProps) {
                                                             ? 'cursor-not-allowed bg-blue-600/70 dark:bg-blue-700/70'
                                                             : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-700 dark:to-blue-800'
                                                     } ${isSubmitting ? 'animate-pulse' : ''} active:scale-97.5 hover:shadow-xl`}
-                                                    disabled={!isPinComplete || isSubmitting}
+                                                    disabled={!isPinComplete || isSubmitting || !!startedAt}
                                                 >
                                                     {isSubmitting ? (
                                                         <span className="flex items-center justify-center gap-2">
