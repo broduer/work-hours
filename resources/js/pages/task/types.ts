@@ -36,6 +36,8 @@ export type Task = {
     status: 'pending' | 'in_progress' | 'completed'
     priority: 'low' | 'medium' | 'high'
     due_date: string | null
+    created_at?: string
+    updated_at?: string
     is_imported: boolean
     is_recurring?: boolean | null
     recurring_frequency?: 'daily' | 'weekly' | 'every_other_week' | 'monthly' | '' | null

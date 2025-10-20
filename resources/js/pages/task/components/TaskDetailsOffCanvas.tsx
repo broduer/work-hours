@@ -275,7 +275,7 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                 {/* Task title */}
                                 <div>
                                     <h2 className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                                        {task.name || 'Untitled Task'}
+                                        {task.title || 'Untitled Task'}
                                     </h2>
                                     {task.created_at && (
                                         <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
@@ -302,12 +302,12 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                     <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                         <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Assigned To</div>
                                         <div className="mt-1 flex items-center gap-2">
-                                            {task.assignee ? (
+                                            {task.assignees && task.assignees.length > 0 ? (
                                                 <>
                                                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                                        {task.assignee.name?.[0] || '?'}
+                                                        {task.assignees[0]?.name?.[0] || '?'}
                                                     </div>
-                                                    <span className="font-medium text-gray-900 dark:text-white">{task.assignee.name}</span>
+                                                    <span className="font-medium text-gray-900 dark:text-white">{task.assignees[0]?.name}</span>
                                                 </>
                                             ) : (
                                                 <span className="text-gray-500 dark:text-gray-400">Unassigned</span>
@@ -422,7 +422,7 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
 
                                                     {editingCommentId === comment.id ? (
                                                         <div className="space-y-3">
-                                                            <RichTextEditor initialValue={editingBody} onChange={setEditingBody} />
+                                                            <RichTextEditor value={editingBody} onChange={setEditingBody} />
                                                             <div className="flex justify-end gap-2">
                                                                 <Button
                                                                     size="sm"
@@ -463,7 +463,7 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                             placeholder="Add a comment..."
                                             onChange={setDataBody}
                                             value={dataBody}
-                                            mentionableUsers={mentionableUsers}
+                                            mentions={mentionableUsers}
                                         />
                                         <div className="flex justify-end">
                                             <Button type="submit" disabled={!stripHtml(dataBody)}>
