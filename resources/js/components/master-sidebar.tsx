@@ -100,12 +100,16 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
 
     return (
         <div
-            className={`sticky top-0 flex h-screen flex-col border-r border-neutral-200 bg-white shadow-sm transition-all duration-300 ease-in-out dark:border-neutral-800 dark:bg-neutral-900 ${
+            className={`sticky top-0 flex h-screen flex-col border-r border-neutral-200 bg-gradient-to-b from-blue-50 to-white shadow-md transition-all duration-300 ease-in-out dark:border-neutral-800 dark:from-gray-900 dark:to-gray-950 ${
                 collapsed ? 'w-20' : 'w-62'
             }`}
         >
+            <div className="absolute top-0 left-0 h-32 w-20 rounded-br-[6rem] bg-blue-500/5 dark:bg-blue-600/10" aria-hidden="true"></div>
+            <div className="absolute right-0 bottom-0 h-32 w-32 rounded-tl-[6rem] bg-indigo-500/5 dark:bg-indigo-600/10" aria-hidden="true"></div>
+            <div className="absolute top-1/3 right-4 h-16 w-16 rounded-full bg-blue-500/5 dark:bg-blue-600/10" aria-hidden="true"></div>
+
             <div
-                className={`border-b border-neutral-200 transition-all duration-300 ease-in-out dark:border-neutral-700 ${
+                className={`relative z-10 border-b border-neutral-200 transition-all duration-300 ease-in-out dark:border-neutral-700 ${
                     collapsed ? 'flex flex-col items-center' : 'px-2'
                 }`}
             >
@@ -116,7 +120,7 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                 </div>
             </div>
 
-            <div className={`flex flex-1 flex-col overflow-y-auto pt-3 ${collapsed ? 'px-2' : 'px-4'}`}>
+            <div className={`relative z-10 flex flex-1 flex-col overflow-y-auto pt-3 ${collapsed ? 'px-2' : 'px-4'}`}>
                 {!isEmployee && (
                     <div className="mb-3">
                         <TooltipProvider>
@@ -232,7 +236,7 @@ export function MasterSidebar({ collapsed }: MasterSidebarProps) {
                 )}
             </div>
 
-            <div className={`border-t border-neutral-200 pt-3 pb-4 dark:border-neutral-700 ${collapsed ? 'px-2' : 'px-4'}`}>
+            <div className={`relative z-10 border-t border-neutral-200 pt-3 pb-4 dark:border-neutral-700 ${collapsed ? 'px-2' : 'px-4'}`}>
                 <FooterNavigation collapsed={collapsed} />
                 <UserSection collapsed={collapsed} user={auth.user} />
             </div>

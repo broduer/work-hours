@@ -75,7 +75,7 @@ export default function Dashboard() {
         <MasterLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="relative mx-auto flex flex-col gap-6">
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-md dark:from-gray-800 dark:to-gray-750">
+                <div className="dark:to-gray-750 relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-md dark:from-gray-800">
                     <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-blue-500/5 dark:bg-blue-600/5" aria-hidden="true"></div>
                     <div className="absolute top-1/4 right-12 h-24 w-24 rounded-full bg-blue-500/10 dark:bg-blue-600/10" aria-hidden="true"></div>
                     <div className="relative z-10">

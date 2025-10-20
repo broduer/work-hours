@@ -50,37 +50,29 @@ export default function MasterLayout({ children, breadcrumbs = [] }: MasterLayou
 
     return (
         <NotificationsProvider>
-            <div className="relative flex min-h-screen bg-gradient-to-br from-blue-100 via-white to-indigo-100/40 dark:from-gray-900 dark:via-gray-850 dark:to-indigo-950/30 print:bg-white">
-                {/* Decorative background elements */}
+            <div className="dark:via-gray-850 relative flex min-h-screen bg-gradient-to-br from-blue-100 via-white to-indigo-100/40 dark:from-gray-900 dark:to-indigo-950/30 print:bg-white">
+                <div className="absolute top-0 left-0 h-96 w-96 rounded-br-[20rem] bg-blue-500/10 dark:bg-blue-600/10" aria-hidden="true"></div>
                 <div
-                    className="absolute top-0 left-0 h-96 w-96 rounded-br-[20rem] bg-blue-500/10 dark:bg-blue-600/10"
+                    className="absolute right-0 bottom-0 h-96 w-96 rounded-tl-[20rem] bg-indigo-500/10 dark:bg-indigo-600/10"
                     aria-hidden="true"
                 ></div>
-                <div
-                    className="absolute bottom-0 right-0 h-96 w-96 rounded-tl-[20rem] bg-indigo-500/10 dark:bg-indigo-600/10"
-                    aria-hidden="true"
-                ></div>
-                <div
-                    className="absolute top-1/3 right-1/4 h-64 w-64 rounded-full bg-blue-500/10 dark:bg-blue-600/10"
-                    aria-hidden="true"
-                ></div>
-                <div
-                    className="absolute bottom-1/4 left-1/4 h-48 w-48 rounded-full bg-indigo-400/5 dark:bg-indigo-500/5"
-                    aria-hidden="true"
-                ></div>
+                <div className="absolute top-1/3 right-1/4 h-64 w-64 rounded-full bg-blue-500/10 dark:bg-blue-600/10" aria-hidden="true"></div>
+                <div className="absolute bottom-1/4 left-1/4 h-48 w-48 rounded-full bg-indigo-400/5 dark:bg-indigo-500/5" aria-hidden="true"></div>
 
-                <div className="print:hidden relative z-10">
+                <div className="relative z-10 print:hidden">
                     <MasterSidebar collapsed={collapsed} />
                 </div>
 
                 <TimeTrackerProvider>
-                    <div className={`flex-1 transition-all duration-500 relative z-10 ${pageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                    <div
+                        className={`relative z-10 flex-1 transition-all duration-500 ${pageLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                    >
                         <MasterContent breadcrumbs={breadcrumbs} collapsed={collapsed} setCollapsed={setCollapsed}>
                             {children}
                         </MasterContent>
                     </div>
 
-                    <div className="print:hidden relative z-10">
+                    <div className="relative z-10 print:hidden">
                         <MasterRightSidebar collapsed={collapsed} />
                     </div>
                 </TimeTrackerProvider>

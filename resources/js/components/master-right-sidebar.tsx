@@ -64,9 +64,13 @@ export function MasterRightSidebar({ collapsed = true }: MasterRightSidebarProps
 
     return (
         <div
-            className={`sticky top-0 flex h-screen flex-col border-l border-neutral-200 bg-white shadow-sm transition-all duration-300 ease-in-out dark:border-neutral-800 dark:bg-neutral-900 ${collapsed ? 'w-20' : 'w-52'}`}
+            className={`sticky top-0 flex h-screen flex-col border-l border-neutral-200 bg-gradient-to-b from-blue-50 to-white shadow-md transition-all duration-300 ease-in-out dark:border-neutral-800 dark:from-gray-900 dark:to-gray-950 ${collapsed ? 'w-20' : 'w-52'}`}
         >
-            <div className={`mt-2 flex flex-col overflow-y-auto ${collapsed ? '' : 'mr-8'}`}>
+            <div className="absolute top-0 right-0 h-32 w-16 rounded-bl-[6rem] bg-blue-500/5 dark:bg-blue-600/10" aria-hidden="true"></div>
+            <div className="absolute bottom-0 left-0 h-32 w-16 rounded-tr-[6rem] bg-indigo-500/5 dark:bg-indigo-600/10" aria-hidden="true"></div>
+            <div className="absolute top-1/3 left-4 h-16 w-16 rounded-full bg-blue-500/5 dark:bg-blue-600/10" aria-hidden="true"></div>
+
+            <div className={`relative z-10 mt-2 flex flex-col overflow-y-auto ${collapsed ? '' : 'mr-8'}`}>
                 <div className="mb-6 px-4">
                     <div className="mb-3 pb-2">
                         <h3

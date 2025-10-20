@@ -1,11 +1,10 @@
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import RichTextEditor from '@/components/ui/rich-text-editor'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Head, router } from '@inertiajs/react'
+import { router } from '@inertiajs/react'
 import DOMPurify from 'dompurify'
-import { Calendar, Clock, ExternalLink, Glasses, Loader2, Pencil, Save, Trash, Trash2, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { Calendar, Clock, ExternalLink, Loader2, Pencil, Trash2, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 import type { Task } from '@/pages/task/types'
 
@@ -79,15 +78,12 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
         if (open && taskId) {
             fetchData()
         } else {
-            // Clear state when closing
             setTask(null)
             setAttachments([])
             setComments([])
             setError(null)
         }
     }, [open, taskId])
-
-    // Handle comment functionality
     const handleCommentSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!taskId || !dataBody.trim()) return
@@ -216,13 +212,10 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                     </div>
                 ) : task ? (
                     <div className="flex h-full flex-col">
-                        {/* Header section with sticky positioning */}
                         <div className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/95">
                             <div className="flex items-center justify-between px-6 pt-6 pb-4">
                                 <SheetHeader className="mb-0">
-                                    <SheetTitle className="pr-8 text-xl font-bold text-gray-900 dark:text-white">
-                                        Task Details
-                                    </SheetTitle>
+                                    <SheetTitle className="pr-8 text-xl font-bold text-gray-900 dark:text-white">Task Details</SheetTitle>
                                 </SheetHeader>
                                 <Button
                                     variant="ghost"
@@ -238,11 +231,15 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                             <div className="border-b border-gray-100 bg-gray-50 px-6 py-2 dark:border-gray-800 dark:bg-gray-800/50">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeColor(task.status || '')}`}>
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeColor(task.status || '')}`}
+                                        >
                                             {task.status || 'No Status'}
                                         </span>
                                         {task.priority && (
-                                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getPriorityBadgeColor(task.priority)}`}>
+                                            <span
+                                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getPriorityBadgeColor(task.priority)}`}
+                                            >
                                                 {task.priority} Priority
                                             </span>
                                         )}
@@ -252,7 +249,6 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                         variant="outline"
                                         className="h-7 gap-1 text-xs"
                                         onClick={() => {
-                                            // Navigate to edit page for this task
                                             if (task?.id) {
                                                 try {
                                                     const url = route('task.edit', task.id)
@@ -269,14 +265,10 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                             </div>
                         </div>
 
-                        {/* Content with padding */}
                         <div className="flex-1 overflow-auto px-6 py-4">
                             <div className="space-y-6">
-                                {/* Task title */}
                                 <div>
-                                    <h2 className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                                        {task.title || 'Untitled Task'}
-                                    </h2>
+                                    <h2 className="text-xl leading-tight font-bold text-gray-900 dark:text-white">{task.title || 'Untitled Task'}</h2>
                                     {task.created_at && (
                                         <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                                             <Clock className="h-3.5 w-3.5" />
@@ -285,11 +277,9 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                     )}
                                 </div>
 
-                                {/* Task details in cards */}
                                 <div className="grid gap-4 sm:grid-cols-2">
-                                    {/* Due Date */}
                                     <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                                        <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Due Date</div>
+                                        <div className="text-xs font-medium text-gray-500 uppercase dark:text-gray-400">Due Date</div>
                                         <div className="mt-1 flex items-center gap-1.5">
                                             <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                             <span className="font-medium text-gray-900 dark:text-white">
@@ -298,9 +288,8 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                         </div>
                                     </div>
 
-                                    {/* Assigned To */}
                                     <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                                        <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Assigned To</div>
+                                        <div className="text-xs font-medium text-gray-500 uppercase dark:text-gray-400">Assigned To</div>
                                         <div className="mt-1 flex items-center gap-2">
                                             {task.assignees && task.assignees.length > 0 ? (
                                                 <>
@@ -316,18 +305,16 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                     </div>
                                 </div>
 
-                                {/* Description */}
                                 {task.description && (
                                     <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                         <h3 className="mb-2 font-medium text-gray-900 dark:text-white">Description</h3>
                                         <div
-                                            className="prose prose-sm max-w-none text-gray-600 dark:prose-invert dark:text-gray-300"
+                                            className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300"
                                             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(task.description) }}
                                         />
                                     </div>
                                 )}
 
-                                {/* Attachments */}
                                 {attachments.length > 0 && (
                                     <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                         <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Attachments</h3>
@@ -368,7 +355,6 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                     </div>
                                 )}
 
-                                {/* Comments */}
                                 <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                     <h3 className="mb-3 font-medium text-gray-900 dark:text-white">Comments</h3>
 
@@ -445,7 +431,7 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                                                         </div>
                                                     ) : (
                                                         <div
-                                                            className="prose prose-sm max-w-none text-gray-600 dark:prose-invert dark:text-gray-300"
+                                                            className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300"
                                                             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.body) }}
                                                         />
                                                     )}
@@ -478,12 +464,13 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                 ) : null}
             </SheetContent>
 
-            {/* Delete comment dialog */}
             {deleteDialogOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                     <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
                         <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete Comment</h3>
-                        <p className="mb-6 text-gray-600 dark:text-gray-300">Are you sure you want to delete this comment? This action cannot be undone.</p>
+                        <p className="mb-6 text-gray-600 dark:text-gray-300">
+                            Are you sure you want to delete this comment? This action cannot be undone.
+                        </p>
                         <div className="flex justify-end gap-2">
                             <Button
                                 variant="outline"
@@ -494,10 +481,7 @@ export default function TaskDetailsOffCanvas({ open, onClose, taskId }: TaskDeta
                             >
                                 Cancel
                             </Button>
-                            <Button
-                                variant="destructive"
-                                onClick={() => commentToDelete && handleDeleteComment(commentToDelete)}
-                            >
+                            <Button variant="destructive" onClick={() => commentToDelete && handleDeleteComment(commentToDelete)}>
                                 Delete
                             </Button>
                         </div>

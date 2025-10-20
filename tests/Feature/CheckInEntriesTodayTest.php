@@ -49,8 +49,6 @@ it('exposes entriesToday with todays clockins and breaks', function (): void {
     $response->assertSuccessful();
 
     $response->assertInertia(function ($page): void {
-        $page->where('entriesToday', function ($val): bool {
-            return is_array($val) && count($val) >= 2 && in_array('clockin', array_column($val, 'type'), true);
-        });
+        $page->where('entriesToday', fn ($val): bool => is_array($val) && count($val) >= 2 && in_array('clockin', array_column($val, 'type'), true));
     });
 });

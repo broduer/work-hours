@@ -15,26 +15,16 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
     return (
         <div className="relative flex flex-1 flex-col">
             <div className="sticky top-0 z-20 border-b border-gray-200 bg-gradient-to-r from-blue-600/90 to-indigo-700/90 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:from-blue-900/90 dark:to-indigo-900/90 print:hidden">
-                <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3.5 relative">
-                    {/* Decorative background elements */}
-                    <div
-                        className="absolute top-0 left-0 h-16 w-16 rounded-br-[3rem] bg-white/10 dark:bg-white/5"
-                        aria-hidden="true"
-                    ></div>
-                    <div
-                        className="absolute -top-6 -right-6 h-32 w-32 rounded-full bg-white/5 dark:bg-white/5"
-                        aria-hidden="true"
-                    ></div>
-                    <div
-                        className="absolute bottom-0 right-24 h-12 w-12 rounded-full bg-white/10 dark:bg-white/5"
-                        aria-hidden="true"
-                    ></div>
+                <div className="relative grid grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3.5">
+                    <div className="absolute top-0 left-0 h-16 w-16 rounded-br-[3rem] bg-white/10 dark:bg-white/5" aria-hidden="true"></div>
+                    <div className="absolute -top-6 -right-6 h-32 w-32 rounded-full bg-white/5 dark:bg-white/5" aria-hidden="true"></div>
+                    <div className="absolute right-24 bottom-0 h-12 w-12 rounded-full bg-white/10 dark:bg-white/5" aria-hidden="true"></div>
 
-                    <div className="flex items-center z-10">
+                    <div className="z-10 flex items-center">
                         <div className="relative flex items-center">
                             <Link
                                 href={route('dashboard')}
-                                className="rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10 cursor-pointer"
+                                className="cursor-pointer rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10"
                             >
                                 <Home className="h-5 w-5" />
                             </Link>
@@ -61,16 +51,16 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
                         )}
                     </div>
 
-                    <div className="flex items-center justify-center z-10">
+                    <div className="z-10 flex items-center justify-center">
                         <RunningTracker />
                     </div>
 
-                    <div className="flex items-center gap-4 z-10">
+                    <div className="z-10 flex items-center gap-4">
                         <AppearanceToggleDropdown className="rounded-lg text-white dark:text-gray-100" />
 
                         <Link
                             href="/calendar"
-                            className="relative flex items-center rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10 cursor-pointer"
+                            className="relative flex cursor-pointer items-center rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10"
                             aria-label="View calendar"
                         >
                             <svg
