@@ -152,8 +152,9 @@ export default function CheckIn({
     }
 
     const isPinComplete = pin.every((digit) => digit !== '')
-    const workedSecondsNow = totalWorkedSecondsToday + (startedAt && !isOnBreak ? elapsed : 0)
-    const breakSecondsNow = totalBreakSecondsToday + (isOnBreak ? elapsedBreak : 0)
+    // Use server-provided totals directly to avoid double counting running timers
+    const workedSecondsNow = totalWorkedSecondsToday
+    const breakSecondsNow = totalBreakSecondsToday
 
     const formatHours = (totalSeconds: number) => {
         const hours = totalSeconds / 3600

@@ -80,8 +80,6 @@ final class CheckInController extends Controller
             }
         }
 
-        $totalWorkedSecondsToday = max(0, $totalClockinSeconds - $totalBreakSeconds);
-
         return Inertia::render('checkin/index', [
             'user' => [
                 'id' => $user->id,
@@ -95,7 +93,7 @@ final class CheckInController extends Controller
             ] : null,
             'checkedInAt' => $checkedInAt,
             'breakStartedAt' => $breakStartedAt,
-            'totalWorkedSecondsToday' => $totalWorkedSecondsToday,
+            'totalWorkedSecondsToday' => $totalClockinSeconds,
             'totalBreakSecondsToday' => $totalBreakSeconds,
         ]);
     }
