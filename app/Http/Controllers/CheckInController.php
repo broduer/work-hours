@@ -95,4 +95,79 @@ final class CheckInController extends Controller
 
         return to_route('checkin.index')->with('success', 'Checked in successfully.');
     }
+
+    public function startBreak(): RedirectResponse
+    {
+        $user = auth()->user();
+
+        // Ensure user has an open clockin
+        $openClockIn = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'clockin')
+            ->whereNull('end_time')
+            ->latest('id')
+            ->first();
+
+        if (! $openClockIn) {
+            return back()->with('error', 'You are not currently checked in.');
+        }
+
+        // Prevent multiple open breaks
+        $hasOpenBreak = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'breaks')
+            ->whereNull('end_time')
+            ->exists();
+
+        if ($hasOpenBreak) {
+            return back()->with('error', 'You already have an active break.');
+        }
+
+        $now = now();
+        Attendance::query()->create([
+            'user_id' => $user->id,
+            'type' => 'breaks',
+            'date' => $now->toDateString(),
+            'start_time' => $now->format('H:i:s'),
+            'end_time' => null,
+        ]);
+
+        return back()->with('success', 'Break started.');
+    }
+
+    public function checkout(): RedirectResponse
+    {
+        $user = auth()->user();
+
+        $openClockIn = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'clockin')
+            ->whereNull('end_time')
+            ->latest('id')
+            ->first();
+
+        if (! $openClockIn) {
+            return back()->with('error', 'No active check-in found.');
+        }
+
+        $now = now();
+
+        // Close any open break first (if present)
+        $openBreak = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'breaks')
+            ->whereNull('end_time')
+            ->latest('id')
+            ->first();
+
+        if ($openBreak) {
+            $openBreak->end_time = $now->format('H:i:s');
+            $openBreak->save();
+        }
+
+        $openClockIn->end_time = $now->format('H:i:s');
+        $openClockIn->save();
+
+        return to_route('checkin.index')->with('success', 'Checked out successfully.');
+    }
 }

@@ -64,14 +64,6 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
         setPin(next)
         if (value && index < 3) {
             inputRefs.current[index + 1]?.focus()
-        } else if (value && index === 3) {
-            const allFilled = next.every((digit) => digit !== '')
-            if (allFilled) {
-                setTimeout(() => {
-                    const form = document.getElementById('pin-form') as HTMLFormElement | null
-                    form?.requestSubmit()
-                }, 300)
-            }
         }
     }
 
@@ -230,8 +222,50 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
                                         </p>
                                     </div>
                                 )}
-                                <div className="mb-3 rounded-2xl bg-white p-8 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-800">
-                                    <form id="pin-form" onSubmit={handleSubmit} className="space-y-8">
+
+                                {startedAt ? (
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                router.post(
+                                                    route('checkin.break'),
+                                                    {},
+                                                    { preserveScroll: true }
+                                                )
+                                            }
+                                            className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow hover:shadow-md transition dark:border-amber-900/40 dark:bg-amber-900/20"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 text-white">☕</span>
+                                                <div>
+                                                    <div className="text-lg font-semibold text-amber-800 dark:text-amber-300">Take a break</div>
+                                                    <div className="text-sm text-amber-700/80 dark:text-amber-400/80">Start a break. You can check out later.</div>
+                                                </div>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                router.post(route('checkin.checkout'), {}, {
+                                                    onSuccess: () => setStartedAt(null),
+                                                })
+                                            }
+                                            className="rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow hover:shadow-md transition dark:border-red-900/40 dark:bg-red-900/20"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white">⏻</span>
+                                                <div>
+                                                    <div className="text-lg font-semibold text-red-800 dark:text-red-300">Check out</div>
+                                                    <div className="text-sm text-red-700/80 dark:text-red-400/80">Finish your shift and stop the timer.</div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="mb-3 rounded-2xl bg-white p-8 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-800">
+                                        <form id="pin-form" onSubmit={handleSubmit} className="space-y-8">
                                         <div className="text-center">
                                             <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md dark:from-blue-600 dark:to-blue-800">
                                                 <svg
@@ -357,6 +391,7 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
                                         </div>
                                     </form>
                                 </div>
+                                )}
 
                                 <div className="absolute bottom-6 w-full text-center">
                                     <p className="text-xs text-gray-500 dark:text-gray-400">
