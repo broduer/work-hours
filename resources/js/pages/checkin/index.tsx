@@ -1,5 +1,14 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import FullSplitLayout from '@/layouts/full-split-layout'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import type { User } from '@/types'
 import { Head, router } from '@inertiajs/react'
 import { KeyboardEvent, useEffect, useRef, useState, type FormEvent } from 'react'
@@ -13,7 +22,14 @@ interface CheckInProps {
     totalBreakSecondsToday?: number
 }
 
-export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, totalWorkedSecondsToday = 0, totalBreakSecondsToday = 0 }: CheckInProps) {
+export default function CheckIn({
+    user,
+    employer,
+    checkedInAt,
+    breakStartedAt,
+    totalWorkedSecondsToday = 0,
+    totalBreakSecondsToday = 0,
+}: CheckInProps) {
     const [pin, setPin] = useState(['', '', '', ''])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
@@ -136,12 +152,14 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
     }
 
     const isPinComplete = pin.every((digit) => digit !== '')
-
-    // Dynamic daily totals that include the current running session (work or break)
     const workedSecondsNow = totalWorkedSecondsToday + (startedAt && !isOnBreak ? elapsed : 0)
     const breakSecondsNow = totalBreakSecondsToday + (isOnBreak ? elapsedBreak : 0)
 
-    const formatHours = (totalSeconds: number) => `${(totalSeconds / 3600).toFixed(2)} h`
+    const formatHours = (totalSeconds: number) => {
+        const hours = totalSeconds / 3600
+        const display = hours > 0 && hours < 0.01 ? 0.01 : hours
+        return `${display.toFixed(2)} h`
+    }
 
     return (
         <FullSplitLayout>
@@ -241,8 +259,10 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                             <div className="relative z-10 w-full max-w-md">
                                 {startedAt && (
                                     <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 text-center shadow-sm dark:border-blue-900/40 dark:bg-blue-900/20">
-                                        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">{isOnBreak ? 'Checked in (paused)' : 'Checked in'}</p>
-                                        <p className="mt-1 text-3xl font-mono tabular-nums text-blue-700 dark:text-blue-200">
+                                        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                                            {isOnBreak ? 'Checked in (paused)' : 'Checked in'}
+                                        </p>
+                                        <p className="mt-1 font-mono text-3xl text-blue-700 tabular-nums dark:text-blue-200">
                                             {formatElapsed(elapsed)}
                                         </p>
                                     </div>
@@ -251,7 +271,7 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                                 {isOnBreak && (
                                     <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-center shadow-sm dark:border-amber-900/40 dark:bg-amber-900/20">
                                         <p className="text-sm font-medium text-amber-800 dark:text-amber-300">On break</p>
-                                        <p className="mt-1 text-3xl font-mono tabular-nums text-amber-700 dark:text-amber-200">
+                                        <p className="mt-1 font-mono text-3xl text-amber-700 tabular-nums dark:text-amber-200">
                                             {formatElapsed(elapsedBreak)}
                                         </p>
                                     </div>
@@ -264,7 +284,7 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                                                 <span className="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
                                                 <span className="font-medium">Worked today</span>
                                             </div>
-                                            <div className="font-mono tabular-nums text-gray-900 dark:text-gray-100">
+                                            <div className="font-mono text-gray-900 tabular-nums dark:text-gray-100">
                                                 {formatHours(workedSecondsNow)}
                                             </div>
                                         </div>
@@ -273,7 +293,7 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                                                 <span className="inline-block h-2 w-2 rounded-full bg-amber-500"></span>
                                                 <span className="font-medium">Breaks today</span>
                                             </div>
-                                            <div className="font-mono tabular-nums text-gray-900 dark:text-gray-100">
+                                            <div className="font-mono text-gray-900 tabular-nums dark:text-gray-100">
                                                 {formatHours(breakSecondsNow)}
                                             </div>
                                         </div>
@@ -283,71 +303,85 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                                 {startedAt ? (
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         {!isOnBreak ? (
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                router.post(
-                                                    route('checkin.break'),
-                                                    {},
-                                                    {
-                                                        preserveScroll: true,
-                                                        onSuccess: () => {
-                                                            setIsOnBreak(true)
-                                                            setBreakAt(new Date())
-                                                            setElapsedBreak(0)
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    router.post(
+                                                        route('checkin.break'),
+                                                        {},
+                                                        {
+                                                            preserveScroll: true,
+                                                            onSuccess: () => {
+                                                                setIsOnBreak(true)
+                                                                setBreakAt(new Date())
+                                                                setElapsedBreak(0)
+                                                            },
                                                         },
-                                                    }
-                                                )
-                                            }
-                                            className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow hover:shadow-md transition dark:border-amber-900/40 dark:bg-amber-900/20"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 text-white">☕</span>
-                                                <div>
-                                                    <div className="text-lg font-semibold text-amber-800 dark:text-amber-300">Take a break</div>
-                                                    <div className="text-sm text-amber-700/80 dark:text-amber-400/80">Start a break. You can check out later.</div>
+                                                    )
+                                                }
+                                                className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow transition hover:shadow-md dark:border-amber-900/40 dark:bg-amber-900/20"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 text-white">
+                                                        ☕
+                                                    </span>
+                                                    <div>
+                                                        <div className="text-lg font-semibold text-amber-800 dark:text-amber-300">Take a break</div>
+                                                        <div className="text-sm text-amber-700/80 dark:text-amber-400/80">
+                                                            Start a break. You can check out later.
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </button>
+                                            </button>
                                         ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                router.post(
-                                                    route('checkin.break.end'),
-                                                    {},
-                                                    {
-                                                        preserveScroll: true,
-                                                        onSuccess: () => {
-                                                            setIsOnBreak(false)
-                                                            setBreakAt(null)
-                                                            setElapsedBreak(0)
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    router.post(
+                                                        route('checkin.break.end'),
+                                                        {},
+                                                        {
+                                                            preserveScroll: true,
+                                                            onSuccess: () => {
+                                                                setIsOnBreak(false)
+                                                                setBreakAt(null)
+                                                                setElapsedBreak(0)
+                                                            },
                                                         },
-                                                    }
-                                                )
-                                            }
-                                            className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left shadow hover:shadow-md transition dark:border-emerald-900/40 dark:bg-emerald-900/20"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white">▶</span>
-                                                <div>
-                                                    <div className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">Back to work</div>
-                                                    <div className="text-sm text-emerald-700/80 dark:text-emerald-400/80">Resume your shift. Break will be recorded.</div>
+                                                    )
+                                                }
+                                                className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left shadow transition hover:shadow-md dark:border-emerald-900/40 dark:bg-emerald-900/20"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white">
+                                                        ▶
+                                                    </span>
+                                                    <div>
+                                                        <div className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">
+                                                            Back to work
+                                                        </div>
+                                                        <div className="text-sm text-emerald-700/80 dark:text-emerald-400/80">
+                                                            Resume your shift. Break will be recorded.
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </button>
+                                            </button>
                                         )}
 
                                         <button
                                             type="button"
                                             onClick={() => setConfirmOpen(true)}
-                                            className="rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow hover:shadow-md transition dark:border-red-900/40 dark:bg-red-900/20"
+                                            className="rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow transition hover:shadow-md dark:border-red-900/40 dark:bg-red-900/20"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white">⏻</span>
+                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white">
+                                                    ⏻
+                                                </span>
                                                 <div>
                                                     <div className="text-lg font-semibold text-red-800 dark:text-red-300">Check out</div>
-                                                    <div className="text-sm text-red-700/80 dark:text-red-400/80">Finish your shift and stop the timer.</div>
+                                                    <div className="text-sm text-red-700/80 dark:text-red-400/80">
+                                                        Finish your shift and stop the timer.
+                                                    </div>
                                                 </div>
                                             </div>
                                         </button>
@@ -355,131 +389,131 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                                 ) : (
                                     <div className="mb-3 rounded-2xl bg-white p-8 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-800">
                                         <form id="pin-form" onSubmit={handleSubmit} className="space-y-8">
-                                        <div className="text-center">
-                                            <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md dark:from-blue-600 dark:to-blue-800">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-10 w-10 text-white"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </div>
-                                            <h2 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100">Time to Check In</h2>
-                                            <p className="mx-auto max-w-xs text-gray-600 dark:text-gray-400">
-                                                Enter your 4-digit PIN to start tracking your workday
-                                            </p>
-                                        </div>
-
-                                        <div className="space-y-6">
-                                            <div className="flex justify-center gap-3">
-                                                {pin.map((value, i) => (
-                                                    <div key={i} className="group relative">
-                                                        <input
-                                                            ref={(el) => (inputRefs.current[i] = el)}
-                                                            id={`pin-${i}`}
-                                                            inputMode="numeric"
-                                                            pattern="[0-9]*"
-                                                            maxLength={1}
-                                                            value={value}
-                                                            onChange={(e) => handleChange(i, e.target.value)}
-                                                            onKeyDown={(e) => handleKeyDown(i, e)}
-                                                            aria-label={`PIN digit ${i + 1}`}
-                                                            disabled={!!startedAt || isSubmitting}
-                                                            className={`h-16 w-16 rounded-xl border-2 bg-white text-center text-2xl tracking-widest text-gray-900 shadow-sm transition-all duration-300 outline-none ${value ? 'border-blue-500 dark:border-blue-600' : 'border-gray-300 dark:border-gray-700'} group-hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-200/50 md:h-20 md:w-20 md:text-3xl dark:bg-gray-800 dark:text-gray-100 dark:group-hover:border-blue-700 dark:focus:ring-blue-800/30 disabled:opacity-50`}
+                                            <div className="text-center">
+                                                <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md dark:from-blue-600 dark:to-blue-800">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-10 w-10 text-white"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                                            clipRule="evenodd"
                                                         />
-                                                        {value && (
-                                                            <div
-                                                                className="pointer-events-none absolute inset-0 rounded-xl bg-blue-500/10 dark:bg-blue-600/20"
-                                                                style={{ animation: 'pulse 2s infinite' }}
-                                                            ></div>
-                                                        )}
-                                                        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform">
-                                                            <div
-                                                                className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${value || inputRefs.current[i] === document.activeElement ? 'bg-blue-500 dark:bg-blue-400' : 'bg-gray-300 dark:bg-gray-600'}`}
-                                                            ></div>
+                                                    </svg>
+                                                </div>
+                                                <h2 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100">Time to Check In</h2>
+                                                <p className="mx-auto max-w-xs text-gray-600 dark:text-gray-400">
+                                                    Enter your 4-digit PIN to start tracking your workday
+                                                </p>
+                                            </div>
+
+                                            <div className="space-y-6">
+                                                <div className="flex justify-center gap-3">
+                                                    {pin.map((value, i) => (
+                                                        <div key={i} className="group relative">
+                                                            <input
+                                                                ref={(el) => (inputRefs.current[i] = el)}
+                                                                id={`pin-${i}`}
+                                                                inputMode="numeric"
+                                                                pattern="[0-9]*"
+                                                                maxLength={1}
+                                                                value={value}
+                                                                onChange={(e) => handleChange(i, e.target.value)}
+                                                                onKeyDown={(e) => handleKeyDown(i, e)}
+                                                                aria-label={`PIN digit ${i + 1}`}
+                                                                disabled={!!startedAt || isSubmitting}
+                                                                className={`h-16 w-16 rounded-xl border-2 bg-white text-center text-2xl tracking-widest text-gray-900 shadow-sm transition-all duration-300 outline-none ${value ? 'border-blue-500 dark:border-blue-600' : 'border-gray-300 dark:border-gray-700'} group-hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-200/50 disabled:opacity-50 md:h-20 md:w-20 md:text-3xl dark:bg-gray-800 dark:text-gray-100 dark:group-hover:border-blue-700 dark:focus:ring-blue-800/30`}
+                                                            />
+                                                            {value && (
+                                                                <div
+                                                                    className="pointer-events-none absolute inset-0 rounded-xl bg-blue-500/10 dark:bg-blue-600/20"
+                                                                    style={{ animation: 'pulse 2s infinite' }}
+                                                                ></div>
+                                                            )}
+                                                            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 transform">
+                                                                <div
+                                                                    className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${value || inputRefs.current[i] === document.activeElement ? 'bg-blue-500 dark:bg-blue-400' : 'bg-gray-300 dark:bg-gray-600'}`}
+                                                                ></div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                {error && (
+                                                    <div className="animate-fadeIn rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-600 dark:border-red-800/30 dark:bg-red-900/20 dark:text-red-400">
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path
+                                                                    fillRule="evenodd"
+                                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                                    clipRule="evenodd"
+                                                                />
+                                                            </svg>
+                                                            {error}
                                                         </div>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                )}
 
-                                            {error && (
-                                                <div className="animate-fadeIn rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-600 dark:border-red-800/30 dark:bg-red-900/20 dark:text-red-400">
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path
-                                                                fillRule="evenodd"
-                                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                                clipRule="evenodd"
-                                                            />
-                                                        </svg>
-                                                        {error}
-                                                    </div>
+                                                <div className="flex gap-4 pt-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={resetPin}
+                                                        className="flex-1 rounded-xl border-2 border-gray-300 bg-white px-4 py-3.5 text-center text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:ring-2 focus:ring-gray-200 focus:outline-none active:scale-95 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/70"
+                                                    >
+                                                        Clear
+                                                    </button>
+                                                    <button
+                                                        type="submit"
+                                                        className={`relative flex-[2] overflow-hidden rounded-xl px-4 py-3.5 text-center text-white shadow-lg transition-all duration-300 focus:ring-4 focus:outline-none ${
+                                                            !isPinComplete || isSubmitting
+                                                                ? 'cursor-not-allowed bg-blue-600/70 dark:bg-blue-700/70'
+                                                                : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-700 dark:to-blue-800'
+                                                        } ${isSubmitting ? 'animate-pulse' : ''} active:scale-97.5 hover:shadow-xl`}
+                                                        disabled={!isPinComplete || isSubmitting || !!startedAt}
+                                                    >
+                                                        {isSubmitting ? (
+                                                            <span className="flex items-center justify-center gap-2">
+                                                                <svg
+                                                                    className="mr-2 -ml-1 h-4 w-4 animate-spin text-white"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                >
+                                                                    <circle
+                                                                        className="opacity-25"
+                                                                        cx="12"
+                                                                        cy="12"
+                                                                        r="10"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="4"
+                                                                    ></circle>
+                                                                    <path
+                                                                        className="opacity-75"
+                                                                        fill="currentColor"
+                                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                                    ></path>
+                                                                </svg>
+                                                                Checking in...
+                                                            </span>
+                                                        ) : (
+                                                            'Check in'
+                                                        )}
+
+                                                        {isPinComplete && !isSubmitting && (
+                                                            <span className="absolute inset-0 h-full w-full scale-0 rounded-lg bg-white/30 transition-transform duration-300 ease-out group-active:scale-100"></span>
+                                                        )}
+                                                    </button>
                                                 </div>
-                                            )}
-
-                                            <div className="flex gap-4 pt-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={resetPin}
-                                                    className="flex-1 rounded-xl border-2 border-gray-300 bg-white px-4 py-3.5 text-center text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:ring-2 focus:ring-gray-200 focus:outline-none active:scale-95 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/70"
-                                                >
-                                                    Clear
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className={`relative flex-[2] overflow-hidden rounded-xl px-4 py-3.5 text-center text-white shadow-lg transition-all duration-300 focus:ring-4 focus:outline-none ${
-                                                        !isPinComplete || isSubmitting
-                                                            ? 'cursor-not-allowed bg-blue-600/70 dark:bg-blue-700/70'
-                                                            : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-700 dark:to-blue-800'
-                                                    } ${isSubmitting ? 'animate-pulse' : ''} active:scale-97.5 hover:shadow-xl`}
-                                                    disabled={!isPinComplete || isSubmitting || !!startedAt}
-                                                >
-                                                    {isSubmitting ? (
-                                                        <span className="flex items-center justify-center gap-2">
-                                                            <svg
-                                                                className="mr-2 -ml-1 h-4 w-4 animate-spin text-white"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                            >
-                                                                <circle
-                                                                    className="opacity-25"
-                                                                    cx="12"
-                                                                    cy="12"
-                                                                    r="10"
-                                                                    stroke="currentColor"
-                                                                    strokeWidth="4"
-                                                                ></circle>
-                                                                <path
-                                                                    className="opacity-75"
-                                                                    fill="currentColor"
-                                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                                ></path>
-                                                            </svg>
-                                                            Checking in...
-                                                        </span>
-                                                    ) : (
-                                                        'Check in'
-                                                    )}
-
-                                                    {isPinComplete && !isSubmitting && (
-                                                        <span className="absolute inset-0 h-full w-full scale-0 rounded-lg bg-white/30 transition-transform duration-300 ease-out group-active:scale-100"></span>
-                                                    )}
-                                                </button>
                                             </div>
-                                        </div>
 
-                                        <div className="space-y-1 pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-                                            <p>Need help? Contact your administrator</p>
-                                        </div>
-                                    </form>
-                                </div>
+                                            <div className="space-y-1 pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+                                                <p>Need help? Contact your administrator</p>
+                                            </div>
+                                        </form>
+                                    </div>
                                 )}
 
                                 <div className="absolute bottom-6 w-full text-center">
@@ -491,7 +525,6 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                         </div>
                     </div>
                 </div>
-                {/* Confirmation modal for checkout */}
                 <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
@@ -505,14 +538,18 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                             <AlertDialogAction
                                 onClick={() => {
                                     setConfirmOpen(false)
-                                    router.post(route('checkin.checkout'), {}, {
-                                        onSuccess: () => {
-                                            setStartedAt(null)
-                                            setIsOnBreak(false)
-                                            setBreakAt(null)
-                                            setElapsedBreak(0)
+                                    router.post(
+                                        route('checkin.checkout'),
+                                        {},
+                                        {
+                                            onSuccess: () => {
+                                                setStartedAt(null)
+                                                setIsOnBreak(false)
+                                                setBreakAt(null)
+                                                setElapsedBreak(0)
+                                            },
                                         },
-                                    })
+                                    )
                                 }}
                             >
                                 Confirm

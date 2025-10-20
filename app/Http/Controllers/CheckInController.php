@@ -39,8 +39,6 @@ final class CheckInController extends Controller
             }
             $checkedInAt = $base->toAtomString();
         }
-
-        // If there's an active break, expose its start as breakStartedAt
         $openBreak = null;
         if ($openAttendance) {
             $openBreak = Attendance::query()
@@ -59,8 +57,6 @@ final class CheckInController extends Controller
             }
             $breakStartedAt = $base->toAtomString();
         }
-
-        // Compute today's totals for worked and break seconds
         $today = Date::now();
         $todayStr = $today->toDateString();
 
@@ -75,7 +71,7 @@ final class CheckInController extends Controller
         foreach ($attendancesToday as $row) {
             $start = Date::parse($todayStr . ' ' . $row->start_time);
             $end = $row->end_time ? Date::parse($todayStr . ' ' . $row->end_time) : Date::now();
-            $seconds = max(0, $end->diffInSeconds($start));
+            $seconds = abs($end->diffInSeconds($start));
 
             if ($row->type === 'clockin') {
                 $totalClockinSeconds += $seconds;
@@ -123,8 +119,6 @@ final class CheckInController extends Controller
         if ($team->clockin_pin !== $pin) {
             return back()->withErrors(['pin' => 'Invalid PIN.']);
         }
-
-        // Create attendance entry if none open
         $existsOpen = Attendance::query()
             ->where('user_id', $user->id)
             ->where('type', 'clockin')
@@ -148,8 +142,6 @@ final class CheckInController extends Controller
     public function startBreak(): RedirectResponse
     {
         $user = auth()->user();
-
-        // Ensure user has an open clockin
         $openClockIn = Attendance::query()
             ->where('user_id', $user->id)
             ->where('type', 'clockin')
@@ -160,8 +152,6 @@ final class CheckInController extends Controller
         if (! $openClockIn) {
             return back()->with('error', 'You are not currently checked in.');
         }
-
-        // Prevent multiple open breaks
         $hasOpenBreak = Attendance::query()
             ->where('user_id', $user->id)
             ->where('type', 'breaks')
@@ -187,8 +177,6 @@ final class CheckInController extends Controller
     public function endBreak(): RedirectResponse
     {
         $user = auth()->user();
-
-        // Ensure there is an open clock-in
         $openClockIn = Attendance::query()
             ->where('user_id', $user->id)
             ->where('type', 'clockin')
@@ -199,8 +187,6 @@ final class CheckInController extends Controller
         if (! $openClockIn) {
             return back()->with('error', 'You are not currently checked in.');
         }
-
-        // Find open break
         $openBreak = Attendance::query()
             ->where('user_id', $user->id)
             ->where('type', 'breaks')
@@ -234,8 +220,6 @@ final class CheckInController extends Controller
         }
 
         $now = now();
-
-        // Close any open break first (if present)
         $openBreak = Attendance::query()
             ->where('user_id', $user->id)
             ->where('type', 'breaks')
