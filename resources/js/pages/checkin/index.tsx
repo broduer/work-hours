@@ -114,6 +114,15 @@ export default function CheckIn({ user, employer }: CheckInProps) {
     return (
         <FullSplitLayout>
             <Head title="Employee Check-in" />
+            {/* Date centered at the top of the page */}
+            <div className="absolute top-0 left-0 right-0 flex justify-center z-20 mt-6">
+                <div className="px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-700">
+                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        {currentDate}
+                    </span>
+                </div>
+            </div>
+
             <div className="grid min-h-screen grid-cols-1 md:grid-cols-3 overflow-hidden">
                 {/* Left sidebar with user info */}
                 <div className="relative flex flex-col justify-center bg-gradient-to-br from-white to-blue-50 p-0 md:col-span-1 dark:from-gray-800 dark:to-gray-900">
@@ -122,9 +131,7 @@ export default function CheckIn({ user, employer }: CheckInProps) {
 
                     <div className="px-8 py-12 relative z-10">
                         <div className="space-y-4 mb-12">
-                            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
-                                {currentDate}
-                            </span>
+                            {/* Removing date from here since it's now at the top of the page */}
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                                 {greeting},
                             </h1>
@@ -295,7 +302,7 @@ export default function CheckIn({ user, employer }: CheckInProps) {
 
                         <div className="text-center mt-8">
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                &copy; {new Date().getFullYear()} Work Hours. All rights reserved.
+                                &copy; {new Date().getFullYear()} Your Company. All rights reserved.
                             </p>
                         </div>
                     </div>
