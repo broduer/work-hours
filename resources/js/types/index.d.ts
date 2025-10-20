@@ -30,6 +30,7 @@ export interface SharedData {
     sidebarOpen: boolean
     isGitHubIntegrated?: boolean
     isEmployee?: boolean
+    hasCheckinEnabled?: boolean
     [key: string]: unknown
 }
 

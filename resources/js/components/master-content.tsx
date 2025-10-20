@@ -10,7 +10,7 @@ import { Bell, ChevronRight, Home, Settings } from 'lucide-react'
 
 export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps) {
     const { unreadCount, isAdmin } = useNotifications()
-    const { isEmployee } = usePage<SharedData>().props
+    const { isEmployee, hasCheckinEnabled } = usePage<SharedData>().props
 
     return (
         <div className="relative flex flex-1 flex-col bg-slate-50 dark:bg-slate-900">
@@ -77,6 +77,35 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
                         </Link>
+
+                        {isEmployee && hasCheckinEnabled && (
+                            <Link
+                                href={route('checkin.index')}
+                                className="relative flex items-center rounded-md p-1.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-400"
+                                aria-label="Employee check-in"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="h-5 w-5"
+                                >
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <path d="M7 10h.01"></path>
+                                    <path d="M12 10h.01"></path>
+                                    <path d="M17 10h.01"></path>
+                                    <path d="M7 15h.01"></path>
+                                    <path d="M12 15h.01"></path>
+                                    <path d="M17 15h.01"></path>
+                                </svg>
+                            </Link>
+                        )}
 
                         {isAdmin && (
                             <Link

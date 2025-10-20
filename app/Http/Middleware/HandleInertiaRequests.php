@@ -48,7 +48,15 @@ final class HandleInertiaRequests extends Middleware
 
         $user = $request->user();
         $teamContext = $user ? TeamStore::getContextFor($user) : null;
-        $isEmployee = $user && Team::query()->where('member_id', $user->id)->where('is_employee', true)->exists();
+        $isEmployee = $user && Team::query()
+            ->where('member_id', $user->id)
+            ->where('is_employee', true)
+            ->exists();
+        $hasCheckinEnabled = $user && Team::query()
+            ->where('member_id', $user->id)
+            ->where('is_employee', true)
+            ->where('enable_clockin', true)
+            ->exists();
 
         return [
             ...parent::share($request),
@@ -59,6 +67,7 @@ final class HandleInertiaRequests extends Middleware
             ],
             'teamContext' => $teamContext,
             'isEmployee' => $isEmployee,
+            'hasCheckinEnabled' => $hasCheckinEnabled,
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
