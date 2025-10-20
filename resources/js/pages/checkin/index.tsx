@@ -748,7 +748,18 @@ export default function CheckIn({
                                                         {isOngoing && <span className="ml-2 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Active</span>}
                                                     </h4>
                                                     <span className="font-mono text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                        {formatElapsed(entry.duration_seconds)}
+                                                        {formatElapsed((() => {
+                                                            const isOngoing = !entry.end_time;
+                                                            if (isOngoing) {
+                                                                if (entry.type === 'clockin' && startedAt && !isOnBreak) {
+                                                                    return elapsed;
+                                                                }
+                                                                if (entry.type === 'breaks' && breakAt && isOnBreak) {
+                                                                    return elapsedBreak;
+                                                                }
+                                                            }
+                                                            return entry.duration_seconds;
+                                                        })())}
                                                     </span>
                                                 </div>
                                                 <div className="mt-1 flex items-center text-xs text-gray-500 dark:text-gray-400">
