@@ -50,13 +50,13 @@ export default function MasterLayout({ children, breadcrumbs = [] }: MasterLayou
 
     return (
         <NotificationsProvider>
-            <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900 print:bg-white">
+            <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-900 dark:to-slate-800 print:bg-white">
                 <div className="print:hidden">
                     <MasterSidebar collapsed={collapsed} />
                 </div>
 
                 <TimeTrackerProvider>
-                    <div className={`flex-1 transition-all duration-300 ${pageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                    <div className={`flex-1 transition-all duration-500 ${pageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                         <MasterContent breadcrumbs={breadcrumbs} collapsed={collapsed} setCollapsed={setCollapsed}>
                             {children}
                         </MasterContent>
@@ -80,7 +80,7 @@ export default function MasterLayout({ children, breadcrumbs = [] }: MasterLayou
                         position="top-right"
                         closeButton={true}
                         toastOptions={{
-                            className: 'shadow-md rounded-lg border border-gray-200 dark:border-gray-800',
+                            className: 'shadow-lg rounded-xl border border-gray-200 dark:border-gray-700',
                             duration: 10000,
                         }}
                     />
