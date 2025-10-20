@@ -215,9 +215,9 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
 
                             <div className="relative z-10 w-full max-w-md">
                                 {startedAt && (
-                                    <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-center shadow-sm dark:border-green-900/40 dark:bg-green-900/20">
-                                        <p className="text-sm font-medium text-green-800 dark:text-green-300">Checked in</p>
-                                        <p className="mt-1 text-3xl font-mono tabular-nums text-green-700 dark:text-green-200">
+                                    <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 text-center shadow-sm dark:border-blue-900/40 dark:bg-blue-900/20">
+                                        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">Checked in</p>
+                                        <p className="mt-1 text-3xl font-mono tabular-nums text-blue-700 dark:text-blue-200">
                                             {formatElapsed(elapsed)}
                                         </p>
                                     </div>
