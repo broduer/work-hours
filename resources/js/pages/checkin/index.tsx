@@ -307,9 +307,12 @@ export default function CheckIn({
                                             <button
                                                 type="button"
                                                 onClick={() => setDetailsOpen(true)}
-                                                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-700 dark:hover:bg-blue-600 cursor-pointer"
+                                                className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 dark:bg-blue-700 dark:hover:bg-blue-600"
                                             >
-                                                Details
+                                                <span>Details</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
+                                                    <path d="m9 18 6-6-6-6"/>
+                                                </svg>
                                             </button>
                                         </div>
                                         <div className="p-4">
@@ -665,9 +668,13 @@ export default function CheckIn({
                 </AlertDialog>
 
                 <Sheet open={detailsOpen} onOpenChange={setDetailsOpen}>
-                    <SheetContent side="right" className="overflow-y-auto bg-white pr-6 pb-8 pl-6 sm:max-w-md md:max-w-lg dark:bg-gray-900">
+                    <SheetContent side="right" className="overflow-y-auto bg-white shadow-xl pr-6 pb-8 pl-6 sm:max-w-md md:max-w-lg dark:bg-gray-900">
                         <SheetHeader className="mb-6">
-                            <SheetTitle className="flex items-center gap-2 text-xl text-gray-900 dark:text-white">
+                            <SheetTitle className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
+                                    <path d="M12 20h9"/>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                </svg>
                                 Today's Details
                             </SheetTitle>
                             <SheetDescription className="text-sm text-gray-500 dark:text-gray-400">
@@ -677,30 +684,100 @@ export default function CheckIn({
 
                         <div className="space-y-4">
                             {entriesToday.length === 0 && (
-                                <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                                    No entries for today yet.
+                                <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 dark:text-gray-400">
+                                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                            <line x1="16" x2="16" y1="2" y2="6"/>
+                                            <line x1="8" x2="8" y1="2" y2="6"/>
+                                            <line x1="3" x2="21" y1="10" y2="10"/>
+                                        </svg>
+                                    </div>
+                                    <p className="font-medium">No entries for today yet.</p>
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Your work sessions will appear here once you begin.</p>
                                 </div>
                             )}
 
-                            {entriesToday.map((entry, idx) => {
-                                const label = entry.type === 'clockin' ? 'Work session' : 'Break'
-                                const start = entry.start_time?.slice(0, 5)
-                                const end = entry.end_time ? entry.end_time.slice(0, 5) : 'ongoing'
-                                return (
-                                    <div
-                                        key={idx}
-                                        className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-                                    >
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-900 dark:text-white">{label}</div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400">{start} - {end}</div>
+                            {entriesToday.length > 0 && (
+                                <div className="mb-4 flex justify-between items-center">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-300">Activity Timeline</h3>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-md">
+                                        {new Date().toLocaleDateString(undefined, {weekday: 'short', month: 'short', day: 'numeric'})}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="space-y-3">
+                                {entriesToday.map((entry, idx) => {
+                                    const label = entry.type === 'clockin' ? 'Work session' : 'Break';
+                                    const start = entry.start_time?.slice(0, 5);
+                                    const end = entry.end_time ? entry.end_time.slice(0, 5) : 'ongoing';
+                                    const isOngoing = !entry.end_time;
+                                    const iconColor = entry.type === 'clockin' ? 'text-blue-600 dark:text-blue-400' : 'text-amber-500 dark:text-amber-400';
+                                    const bgColor = entry.type === 'clockin'
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/30'
+                                        : 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800/30';
+
+                                    return (
+                                        <div
+                                            key={idx}
+                                            className={`relative flex items-start rounded-lg border p-4 transition-all duration-200 ${bgColor} ${isOngoing ? 'shadow-md' : 'shadow-sm'}`}
+                                        >
+                                            <div className="mr-4 flex-shrink-0">
+                                                <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm dark:bg-gray-800 ${isOngoing ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-blue-400 dark:ring-offset-gray-900' : ''}`}>
+                                                    {entry.type === 'clockin' ? (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={iconColor}>
+                                                            <circle cx="12" cy="12" r="10"/>
+                                                            <polyline points="12 6 12 12 16 14"/>
+                                                        </svg>
+                                                    ) : (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={iconColor}>
+                                                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                                                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                                                            <line x1="6" y1="1" x2="6" y2="4"/>
+                                                            <line x1="10" y1="1" x2="10" y2="4"/>
+                                                            <line x1="14" y1="1" x2="14" y2="4"/>
+                                                        </svg>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex-grow">
+                                                <div className="flex justify-between items-center">
+                                                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                                                        {label}
+                                                        {isOngoing && <span className="ml-2 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Active</span>}
+                                                    </h4>
+                                                    <span className="font-mono text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                        {formatElapsed(entry.duration_seconds)}
+                                                    </span>
+                                                </div>
+                                                <div className="mt-1 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                    <span className="font-medium">{start}</span>
+                                                    <span className="mx-1">—</span>
+                                                    <span className={isOngoing ? "font-semibold text-blue-600 dark:text-blue-400" : ""}>
+                                                        {end}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="font-mono text-sm text-gray-700 dark:text-gray-200">
-                                            {formatElapsed(entry.duration_seconds)}
+                                    );
+                                })}
+                            </div>
+
+                            {entriesToday.length > 0 && (
+                                <div className="mt-8 rounded-lg border border-gray-100 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="text-center">
+                                            <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Total Work</div>
+                                            <div className="mt-1 font-mono text-lg font-bold text-blue-600 dark:text-blue-400">{formatHours(workedSecondsNow)}</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Total Breaks</div>
+                                            <div className="mt-1 font-mono text-lg font-bold text-amber-600 dark:text-amber-400">{formatHours(breakSecondsNow)}</div>
                                         </div>
                                     </div>
-                                )
-                            })}
+                                </div>
+                            )}
                         </div>
                     </SheetContent>
                 </Sheet>
