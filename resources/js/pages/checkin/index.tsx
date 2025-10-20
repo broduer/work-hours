@@ -308,8 +308,13 @@ export default function CheckIn({
                                                 type="button"
                                                 onClick={() => setDetailsOpen(true)}
                                                 className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 dark:bg-blue-700 dark:hover:bg-blue-600"
+                                                aria-label="View details"
                                             >
-                                                <span>Details</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-info">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                    <line x1="12" y1="8" x2="12" y2="8"></line>
+                                                </svg>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
                                                     <path d="m9 18 6-6-6-6"/>
                                                 </svg>
