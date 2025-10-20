@@ -39,6 +39,7 @@ export default function CheckIn({
     const [isOnBreak, setIsOnBreak] = useState<boolean>(!!breakStartedAt)
     const [breakAt, setBreakAt] = useState<Date | null>(breakStartedAt ? new Date(breakStartedAt) : null)
     const [elapsedBreak, setElapsedBreak] = useState<number>(0)
+    const [currentTime, setCurrentTime] = useState(new Date())
     const inputRefs = useRef<(HTMLInputElement | null)[]>([null, null, null, null])
     const today = new Date()
     const currentDate = today.toLocaleDateString('en-US', {
@@ -56,6 +57,16 @@ export default function CheckIn({
     }
 
     const greeting = getGreeting()
+
+    // Update current time every minute
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 60000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     useEffect(() => {
         inputRefs.current[0]?.focus()
     }, [])
@@ -162,48 +173,89 @@ export default function CheckIn({
         return `${display.toFixed(2)} h`
     }
 
+    // Function to format current time
+    const formatTime = (date: Date) => {
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
+
+    // Calculate progress percentage for the timeline visualization
+    const calculateWorkProgress = () => {
+        // Calculate percentage of work time relative to an 8-hour workday
+        const eightHoursInSeconds = 8 * 60 * 60;
+        const percentage = Math.min(100, (workedSecondsNow / eightHoursInSeconds) * 100);
+        return `${percentage}%`;
+    };
+
     return (
         <FullSplitLayout>
             <Head title="Employee Check-in" />
             <>
-                <div className="absolute top-0 right-0 left-0 z-20 mt-6 flex justify-center">
-                    <div className="rounded-full border border-gray-200 bg-white px-4 py-2 shadow-md dark:border-gray-700 dark:bg-gray-800">
-                        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{currentDate}</span>
+                {/* Modern Header with current date and time */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600/90 to-indigo-700/90 shadow-lg backdrop-blur-sm dark:from-blue-900/90 dark:to-indigo-900/90">
+                    <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+                        <div className="flex items-center space-x-3">
+                            <div className="rounded-full bg-white/90 p-1.5 dark:bg-gray-800/90">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-700 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <h1 className="text-lg font-semibold text-white">Work Hours</h1>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            <div className="hidden text-sm text-white/90 md:block">{currentDate}</div>
+                            <div className="rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white backdrop-blur-sm">
+                                {formatTime(currentTime)}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex min-h-screen items-center justify-center">
-                    <div className="mx-auto my-12 grid w-full max-w-6xl grid-cols-1 overflow-hidden rounded-2xl shadow-2xl md:grid-cols-2">
+                <div className="flex min-h-screen items-center justify-center pt-16">
+                    <div className="mx-auto my-8 grid w-full max-w-7xl grid-cols-1 overflow-hidden rounded-3xl shadow-2xl md:grid-cols-2">
                         <div className="relative flex flex-col justify-center bg-gradient-to-br from-white to-blue-50 p-8 dark:from-gray-800 dark:to-gray-900">
-                            <div
-                                className="absolute top-0 left-0 h-32 w-32 rounded-br-[5rem] bg-blue-600/10 dark:bg-blue-600/20"
-                                aria-hidden="true"
-                            ></div>
+                            {/* Decorative elements */}
+                            <div className="absolute top-0 left-0 h-40 w-40 rounded-br-[6rem] bg-blue-600/10 dark:bg-blue-600/20" aria-hidden="true"></div>
+                            <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-blue-500/5 dark:bg-blue-600/5" aria-hidden="true"></div>
+                            <div className="absolute top-1/4 right-12 h-24 w-24 rounded-full bg-blue-500/10 dark:bg-blue-600/10" aria-hidden="true"></div>
 
                             <div className="relative z-10">
-                                <div className="mb-12 space-y-4">
-                                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{greeting},</h1>
-                                    <div className="mt-1 flex items-center space-x-3">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md dark:from-blue-600 dark:to-blue-800">
-                                            <span className="text-lg font-bold text-white">{user.name.charAt(0)}</span>
+                                <div className="mb-8 space-y-4">
+                                    <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">{greeting},</h1>
+                                    <div className="mt-2 flex items-center space-x-4">
+                                        <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/20 dark:from-blue-600 dark:to-blue-800 dark:shadow-blue-800/10">
+                                            <span className="text-xl font-bold text-white">{user.name.charAt(0)}{user.name.split(' ')[1]?.[0] || ''}</span>
                                         </div>
-                                        <h2 className="text-2xl font-medium text-blue-600 dark:text-blue-400">{user.name}</h2>
+                                        <div>
+                                            <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">{user.name}</h2>
+                                            <p className="text-gray-600 dark:text-gray-300">{user.email}</p>
+                                        </div>
                                     </div>
-                                    <p className="pl-1 text-gray-600 dark:text-gray-300">{user.email}</p>
                                 </div>
 
-                                <div className="relative rounded-xl border border-gray-200 bg-white p-6 shadow-md backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/70">
-                                    <div className="absolute -top-3 left-4 bg-white px-2 dark:bg-gray-800">
+                                {/* Employer card with improved design */}
+                                <div className="relative mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800/70">
+                                    <div className="absolute -top-3 left-4 rounded-md bg-white px-2 py-0.5 dark:bg-gray-800">
                                         <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">Employer Information</h2>
                                     </div>
                                     <div className="mt-2">
                                         {employer ? (
                                             <div className="space-y-3">
-                                                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">{employer.name}</p>
-                                                <div className="flex items-center border-t pt-2 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <p className="text-lg font-medium text-gray-800 dark:text-gray-200">{employer.name}</p>
+                                                </div>
+                                                <div className="flex items-center gap-2 border-t pt-3 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
-                                                        className="mr-1 h-4 w-4"
+                                                        className="h-4 w-4"
                                                         viewBox="0 0 20 20"
                                                         fill="currentColor"
                                                     >
@@ -214,11 +266,58 @@ export default function CheckIn({
                                                 </div>
                                             </div>
                                         ) : (
-                                            <p className="text-gray-600 dark:text-gray-300">No employer information found.</p>
+                                            <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                <p>No employer information found.</p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
 
+                                {/* Status Card - Shows when checked in */}
+                                {startedAt && (
+                                    <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800/70">
+                                        <div className="bg-blue-50 px-4 py-2 dark:bg-blue-900/20">
+                                            <h3 className="font-medium text-blue-700 dark:text-blue-300">Today's Work Status</h3>
+                                        </div>
+                                        <div className="p-4">
+                                            {/* Timeline visualization */}
+                                            <div className="mb-4">
+                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                                    <span>Start</span>
+                                                    <span>{Math.floor(workedSecondsNow / 3600)} hrs</span>
+                                                    <span>8 hrs</span>
+                                                </div>
+                                                <div className="mt-1 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                                                    <div
+                                                        className="h-2 rounded-full bg-blue-500 dark:bg-blue-600"
+                                                        style={{ width: calculateWorkProgress() }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Work stats */}
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="rounded-lg bg-blue-50/80 p-3 dark:bg-blue-900/20">
+                                                    <div className="text-xs font-medium text-blue-700 dark:text-blue-300">Work Time</div>
+                                                    <div className="mt-1 font-mono text-xl font-semibold text-blue-800 dark:text-blue-200">
+                                                        {formatHours(workedSecondsNow)}
+                                                    </div>
+                                                </div>
+                                                <div className="rounded-lg bg-amber-50/80 p-3 dark:bg-amber-900/20">
+                                                    <div className="text-xs font-medium text-amber-700 dark:text-amber-300">Break Time</div>
+                                                    <div className="mt-1 font-mono text-xl font-semibold text-amber-800 dark:text-amber-200">
+                                                        {formatHours(breakSecondsNow)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Help card */}
                                 <div className="mt-8 rounded-xl border-l-4 border-blue-500 bg-blue-50 p-4 shadow-sm dark:border-blue-600 dark:bg-blue-900/20">
                                     <div className="flex">
                                         <div className="flex-shrink-0">
@@ -245,9 +344,11 @@ export default function CheckIn({
                             ></div>
                         </div>
 
+                        {/* Divider between columns */}
                         <div className="absolute top-[10%] left-1/2 hidden h-[80%] w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent md:block dark:via-gray-700"></div>
 
-                        <div className="relative flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30 p-8 dark:from-slate-900 dark:to-gray-900">
+                        <div className="relative flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30 p-8 dark:from-slate-900 dark:to-gray-900">
+                            {/* Decorative elements */}
                             <div
                                 className="absolute top-0 right-0 h-32 w-32 rounded-bl-full bg-blue-100/30 dark:bg-blue-900/10"
                                 aria-hidden="true"
@@ -256,51 +357,54 @@ export default function CheckIn({
                                 className="absolute bottom-0 left-0 h-24 w-24 rounded-tr-full bg-blue-100/30 dark:bg-blue-900/10"
                                 aria-hidden="true"
                             ></div>
+                            <div className="absolute top-1/3 left-8 h-16 w-16 rounded-full bg-blue-100/50 dark:bg-blue-900/20" aria-hidden="true"></div>
+                            <div className="absolute bottom-1/4 right-10 h-20 w-20 rounded-full bg-blue-100/40 dark:bg-blue-900/15" aria-hidden="true"></div>
 
                             <div className="relative z-10 w-full max-w-md">
+                                {/* Main timer display when checked in */}
                                 {startedAt && (
-                                    <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 text-center shadow-sm dark:border-blue-900/40 dark:bg-blue-900/20">
-                                        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                                            {isOnBreak ? 'Checked in (paused)' : 'Checked in'}
-                                        </p>
-                                        <p className="mt-1 font-mono text-3xl text-blue-700 tabular-nums dark:text-blue-200">
-                                            {formatElapsed(elapsed)}
-                                        </p>
+                                    <div className="mb-6 overflow-hidden rounded-2xl bg-white shadow-xl dark:border dark:border-gray-700 dark:bg-gray-800">
+                                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 text-center text-white dark:from-blue-700 dark:to-blue-800">
+                                            <p className="text-sm font-medium text-blue-100">
+                                                {isOnBreak ? 'Checked in (paused)' : 'Active Session'}
+                                            </p>
+                                            <p className="mt-1 font-mono text-4xl font-bold tabular-nums tracking-tight">
+                                                {formatElapsed(elapsed)}
+                                            </p>
+                                        </div>
+                                        <div className="p-4">
+                                            <div className="flex items-center justify-center">
+                                                <div className="inline-flex rounded-lg bg-blue-50 p-1 dark:bg-blue-900/30">
+                                                    <div className="rounded-md px-3 py-1 text-sm font-medium text-blue-700 dark:text-blue-300">
+                                                        Started at: {startedAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
+                                {/* Break timer display */}
                                 {isOnBreak && (
-                                    <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-center shadow-sm dark:border-amber-900/40 dark:bg-amber-900/20">
-                                        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">On break</p>
-                                        <p className="mt-1 font-mono text-3xl text-amber-700 tabular-nums dark:text-amber-200">
-                                            {formatElapsed(elapsedBreak)}
-                                        </p>
-                                    </div>
-                                )}
-
-                                {startedAt && (
-                                    <div className="mb-4 rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-                                        <div className="flex items-center justify-between text-sm">
-                                            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                                                <span className="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
-                                                <span className="font-medium">Worked today</span>
+                                    <div className="mb-6 overflow-hidden rounded-2xl bg-white shadow-xl dark:border dark:border-gray-700 dark:bg-gray-800">
+                                        <div className="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4 text-center text-white dark:from-amber-700 dark:to-amber-800">
+                                            <div className="flex items-center justify-center gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                                </svg>
+                                                <p className="text-sm font-medium">Break in Progress</p>
                                             </div>
-                                            <div className="font-mono text-gray-900 tabular-nums dark:text-gray-100">
-                                                {formatHours(workedSecondsNow)}
-                                            </div>
+                                            <p className="mt-1 font-mono text-4xl font-bold tabular-nums tracking-tight">
+                                                {formatElapsed(elapsedBreak)}
+                                            </p>
                                         </div>
-                                        <div className="mt-2 flex items-center justify-between text-sm">
-                                            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                                                <span className="inline-block h-2 w-2 rounded-full bg-amber-500"></span>
-                                                <span className="font-medium">Breaks today</span>
-                                            </div>
-                                            <div className="font-mono text-gray-900 tabular-nums dark:text-gray-100">
-                                                {formatHours(breakSecondsNow)}
-                                            </div>
+                                        <div className="p-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                                            Your work timer is currently paused
                                         </div>
                                     </div>
                                 )}
 
+                                {/* Actions for checked-in state */}
                                 {startedAt ? (
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         {!isOnBreak ? (
@@ -320,17 +424,15 @@ export default function CheckIn({
                                                         },
                                                     )
                                                 }
-                                                className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow transition hover:shadow-md dark:border-amber-900/40 dark:bg-amber-900/20"
+                                                className="group flex flex-col items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow-sm transition hover:bg-amber-100 hover:shadow-md dark:border-amber-900/40 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 text-white">
-                                                        ☕
-                                                    </span>
-                                                    <div>
-                                                        <div className="text-lg font-semibold text-amber-800 dark:text-amber-300">Take a break</div>
-                                                        <div className="text-sm text-amber-700/80 dark:text-amber-400/80">
-                                                            Start a break. You can check out later.
-                                                        </div>
+                                                <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-amber-600 text-2xl text-white shadow-md transition-transform group-hover:scale-110 dark:from-amber-600 dark:to-amber-700">
+                                                    ☕
+                                                </span>
+                                                <div className="mt-4 text-center">
+                                                    <div className="text-lg font-semibold text-amber-800 dark:text-amber-300">Take a break</div>
+                                                    <div className="text-sm text-amber-700/80 dark:text-amber-400/80">
+                                                        Pause your work timer
                                                     </div>
                                                 </div>
                                             </button>
@@ -351,19 +453,17 @@ export default function CheckIn({
                                                         },
                                                     )
                                                 }
-                                                className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left shadow transition hover:shadow-md dark:border-emerald-900/40 dark:bg-emerald-900/20"
+                                                className="group flex flex-col items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left shadow-sm transition hover:bg-emerald-100 hover:shadow-md dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30"
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white">
-                                                        ▶
-                                                    </span>
-                                                    <div>
-                                                        <div className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">
-                                                            Back to work
-                                                        </div>
-                                                        <div className="text-sm text-emerald-700/80 dark:text-emerald-400/80">
-                                                            Resume your shift. Break will be recorded.
-                                                        </div>
+                                                <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 text-2xl text-white shadow-md transition-transform group-hover:scale-110 dark:from-emerald-600 dark:to-emerald-700">
+                                                    ▶
+                                                </span>
+                                                <div className="mt-4 text-center">
+                                                    <div className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">
+                                                        Back to work
+                                                    </div>
+                                                    <div className="text-sm text-emerald-700/80 dark:text-emerald-400/80">
+                                                        Resume your shift
                                                     </div>
                                                 </div>
                                             </button>
@@ -372,40 +472,44 @@ export default function CheckIn({
                                         <button
                                             type="button"
                                             onClick={() => setConfirmOpen(true)}
-                                            className="rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow transition hover:shadow-md dark:border-red-900/40 dark:bg-red-900/20"
+                                            className="group flex flex-col items-center justify-center rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow-sm transition hover:bg-red-100 hover:shadow-md dark:border-red-900/40 dark:bg-red-900/20 dark:hover:bg-red-900/30"
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white">
-                                                    ⏻
-                                                </span>
-                                                <div>
-                                                    <div className="text-lg font-semibold text-red-800 dark:text-red-300">Check out</div>
-                                                    <div className="text-sm text-red-700/80 dark:text-red-400/80">
-                                                        Finish your shift and stop the timer.
-                                                    </div>
+                                            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-2xl text-white shadow-md transition-transform group-hover:scale-110 dark:from-red-600 dark:to-red-700">
+                                                ⏻
+                                            </span>
+                                            <div className="mt-4 text-center">
+                                                <div className="text-lg font-semibold text-red-800 dark:text-red-300">Check out</div>
+                                                <div className="text-sm text-red-700/80 dark:text-red-400/80">
+                                                    Finish your workday
                                                 </div>
                                             </div>
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="mb-3 rounded-2xl bg-white p-8 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-800">
-                                        <form id="pin-form" onSubmit={handleSubmit} className="space-y-8">
+                                    <div className="relative mb-3 overflow-hidden rounded-3xl bg-white shadow-2xl transition-all duration-300 hover:shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-800">
+                                        {/* Decorative top border */}
+                                        <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-500"></div>
+
+                                        <form id="pin-form" onSubmit={handleSubmit} className="space-y-8 p-8">
                                             <div className="text-center">
-                                                <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md dark:from-blue-600 dark:to-blue-800">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-10 w-10 text-white"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
+                                                <div className="relative mb-6 inline-flex h-24 w-24 items-center justify-center">
+                                                    <div className="absolute inset-0 animate-pulse rounded-full bg-blue-100 dark:bg-blue-900/30"></div>
+                                                    <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 dark:from-blue-600 dark:to-blue-800 dark:shadow-blue-800/20">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-10 w-10 text-white"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </div>
                                                 </div>
-                                                <h2 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100">Time to Check In</h2>
+                                                <h2 className="mb-2 text-3xl font-bold text-gray-900 dark:text-gray-100">Time to Check In</h2>
                                                 <p className="mx-auto max-w-xs text-gray-600 dark:text-gray-400">
                                                     Enter your 4-digit PIN to start tracking your workday
                                                 </p>
@@ -468,7 +572,7 @@ export default function CheckIn({
                                                     </button>
                                                     <button
                                                         type="submit"
-                                                        className={`relative flex-[2] overflow-hidden rounded-xl px-4 py-3.5 text-center text-white shadow-lg transition-all duration-300 focus:ring-4 focus:outline-none ${
+                                                        className={`group relative flex-[2] overflow-hidden rounded-xl px-4 py-3.5 text-center text-white shadow-lg transition-all duration-300 focus:ring-4 focus:outline-none ${
                                                             !isPinComplete || isSubmitting
                                                                 ? 'cursor-not-allowed bg-blue-600/70 dark:bg-blue-700/70'
                                                                 : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-700 dark:to-blue-800'
@@ -509,16 +613,26 @@ export default function CheckIn({
                                                     </button>
                                                 </div>
                                             </div>
-
-                                            <div className="space-y-1 pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-                                                <p>Need help? Contact your administrator</p>
-                                            </div>
                                         </form>
+
+                                        {/* Current date display at the bottom */}
+                                        <div className="border-t border-gray-100 bg-gray-50/80 px-8 py-4 text-center dark:border-gray-800 dark:bg-gray-800/50">
+                                            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                                </svg>
+                                                <span className="font-medium">{currentDate}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
-                                <div className="absolute bottom-6 w-full text-center">
+                                {/* Help text */}
+                                <div className="mt-6 text-center">
                                     <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Need help? Contact your administrator
+                                    </p>
+                                    <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
                                         &copy; {new Date().getFullYear()} Your Company. All rights reserved.
                                     </p>
                                 </div>
@@ -527,16 +641,17 @@ export default function CheckIn({
                     </div>
                 </div>
                 <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="dark:border-gray-700 dark:bg-gray-800">
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Check out?</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogTitle className="text-xl font-bold dark:text-gray-100">Check out?</AlertDialogTitle>
+                            <AlertDialogDescription className="dark:text-gray-300">
                                 This will end your current check-in. Any active break will be closed as well. Do you want to continue?
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel className="border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</AlertDialogCancel>
                             <AlertDialogAction
+                                className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
                                 onClick={() => {
                                     setConfirmOpen(false)
                                     router.post(
