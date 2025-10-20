@@ -60,6 +60,32 @@ final class CheckInController extends Controller
             $breakStartedAt = $base->toAtomString();
         }
 
+        // Compute today's totals for worked and break seconds
+        $today = Date::now();
+        $todayStr = $today->toDateString();
+
+        $attendancesToday = Attendance::query()
+            ->where('user_id', $user->id)
+            ->whereDate('date', $todayStr)
+            ->get(['type', 'start_time', 'end_time']);
+
+        $totalClockinSeconds = 0;
+        $totalBreakSeconds = 0;
+
+        foreach ($attendancesToday as $row) {
+            $start = Date::parse($todayStr . ' ' . $row->start_time);
+            $end = $row->end_time ? Date::parse($todayStr . ' ' . $row->end_time) : Date::now();
+            $seconds = max(0, $end->diffInSeconds($start));
+
+            if ($row->type === 'clockin') {
+                $totalClockinSeconds += $seconds;
+            } elseif ($row->type === 'breaks') {
+                $totalBreakSeconds += $seconds;
+            }
+        }
+
+        $totalWorkedSecondsToday = max(0, $totalClockinSeconds - $totalBreakSeconds);
+
         return Inertia::render('checkin/index', [
             'user' => [
                 'id' => $user->id,
@@ -73,6 +99,8 @@ final class CheckInController extends Controller
             ] : null,
             'checkedInAt' => $checkedInAt,
             'breakStartedAt' => $breakStartedAt,
+            'totalWorkedSecondsToday' => $totalWorkedSecondsToday,
+            'totalBreakSecondsToday' => $totalBreakSeconds,
         ]);
     }
 

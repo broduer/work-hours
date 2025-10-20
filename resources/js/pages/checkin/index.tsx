@@ -9,9 +9,11 @@ interface CheckInProps {
     employer: User | null
     checkedInAt?: string | null
     breakStartedAt?: string | null
+    totalWorkedSecondsToday?: number
+    totalBreakSecondsToday?: number
 }
 
-export default function CheckIn({ user, employer, checkedInAt, breakStartedAt }: CheckInProps) {
+export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, totalWorkedSecondsToday = 0, totalBreakSecondsToday = 0 }: CheckInProps) {
     const [pin, setPin] = useState(['', '', '', ''])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
@@ -246,6 +248,29 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt }:
                                         <p className="mt-1 text-3xl font-mono tabular-nums text-amber-700 dark:text-amber-200">
                                             {formatElapsed(elapsedBreak)}
                                         </p>
+                                    </div>
+                                )}
+
+                                {startedAt && (
+                                    <div className="mb-4 rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+                                        <div className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                                                <span className="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
+                                                <span className="font-medium">Worked today</span>
+                                            </div>
+                                            <div className="font-mono tabular-nums text-gray-900 dark:text-gray-100">
+                                                {formatElapsed(totalWorkedSecondsToday)}
+                                            </div>
+                                        </div>
+                                        <div className="mt-2 flex items-center justify-between text-sm">
+                                            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                                                <span className="inline-block h-2 w-2 rounded-full bg-amber-500"></span>
+                                                <span className="font-medium">Breaks today</span>
+                                            </div>
+                                            <div className="font-mono tabular-nums text-gray-900 dark:text-gray-100">
+                                                {formatElapsed(totalBreakSecondsToday)}
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
