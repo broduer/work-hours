@@ -137,6 +137,12 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
 
     const isPinComplete = pin.every((digit) => digit !== '')
 
+    // Dynamic daily totals that include the current running session (work or break)
+    const workedSecondsNow = totalWorkedSecondsToday + (startedAt && !isOnBreak ? elapsed : 0)
+    const breakSecondsNow = totalBreakSecondsToday + (isOnBreak ? elapsedBreak : 0)
+
+    const formatHours = (totalSeconds: number) => `${(totalSeconds / 3600).toFixed(2)} h`
+
     return (
         <FullSplitLayout>
             <Head title="Employee Check-in" />
@@ -259,7 +265,7 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                                                 <span className="font-medium">Worked today</span>
                                             </div>
                                             <div className="font-mono tabular-nums text-gray-900 dark:text-gray-100">
-                                                {formatElapsed(totalWorkedSecondsToday)}
+                                                {formatHours(workedSecondsNow)}
                                             </div>
                                         </div>
                                         <div className="mt-2 flex items-center justify-between text-sm">
@@ -268,7 +274,7 @@ export default function CheckIn({ user, employer, checkedInAt, breakStartedAt, t
                                                 <span className="font-medium">Breaks today</span>
                                             </div>
                                             <div className="font-mono tabular-nums text-gray-900 dark:text-gray-100">
-                                                {formatElapsed(totalBreakSecondsToday)}
+                                                {formatHours(breakSecondsNow)}
                                             </div>
                                         </div>
                                     </div>
