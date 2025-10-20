@@ -1,4 +1,5 @@
 import FullSplitLayout from '@/layouts/full-split-layout'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import type { User } from '@/types'
 import { Head, router } from '@inertiajs/react'
 import { KeyboardEvent, useEffect, useRef, useState, type FormEvent } from 'react'
@@ -7,14 +8,19 @@ interface CheckInProps {
     user: User
     employer: User | null
     checkedInAt?: string | null
+    breakStartedAt?: string | null
 }
 
-export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
+export default function CheckIn({ user, employer, checkedInAt, breakStartedAt }: CheckInProps) {
     const [pin, setPin] = useState(['', '', '', ''])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
     const [startedAt, setStartedAt] = useState<Date | null>(checkedInAt ? new Date(checkedInAt) : null)
     const [elapsed, setElapsed] = useState<number>(0)
+    const [confirmOpen, setConfirmOpen] = useState(false)
+    const [isOnBreak, setIsOnBreak] = useState<boolean>(!!breakStartedAt)
+    const [breakAt, setBreakAt] = useState<Date | null>(breakStartedAt ? new Date(breakStartedAt) : null)
+    const [elapsedBreak, setElapsedBreak] = useState<number>(0)
     const inputRefs = useRef<(HTMLInputElement | null)[]>([null, null, null, null])
     const today = new Date()
     const currentDate = today.toLocaleDateString('en-US', {
@@ -37,7 +43,7 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
     }, [])
 
     useEffect(() => {
-        if (!startedAt) return
+        if (!startedAt || isOnBreak) return
         const tick = () => {
             const seconds = Math.max(0, Math.floor((Date.now() - startedAt.getTime()) / 1000))
             setElapsed(seconds)
@@ -45,7 +51,18 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
         tick()
         const id = setInterval(tick, 1000)
         return () => clearInterval(id)
-    }, [startedAt])
+    }, [startedAt, isOnBreak])
+
+    useEffect(() => {
+        if (!breakAt) return
+        const tick = () => {
+            const seconds = Math.max(0, Math.floor((Date.now() - breakAt.getTime()) / 1000))
+            setElapsedBreak(seconds)
+        }
+        tick()
+        const id = setInterval(tick, 1000)
+        return () => clearInterval(id)
+    }, [breakAt])
 
     const formatElapsed = (totalSeconds: number) => {
         const hrs = Math.floor(totalSeconds / 3600)
@@ -216,22 +233,39 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
                             <div className="relative z-10 w-full max-w-md">
                                 {startedAt && (
                                     <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 text-center shadow-sm dark:border-blue-900/40 dark:bg-blue-900/20">
-                                        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">Checked in</p>
+                                        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">{isOnBreak ? 'Checked in (paused)' : 'Checked in'}</p>
                                         <p className="mt-1 text-3xl font-mono tabular-nums text-blue-700 dark:text-blue-200">
                                             {formatElapsed(elapsed)}
                                         </p>
                                     </div>
                                 )}
 
+                                {isOnBreak && (
+                                    <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-center shadow-sm dark:border-amber-900/40 dark:bg-amber-900/20">
+                                        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">On break</p>
+                                        <p className="mt-1 text-3xl font-mono tabular-nums text-amber-700 dark:text-amber-200">
+                                            {formatElapsed(elapsedBreak)}
+                                        </p>
+                                    </div>
+                                )}
+
                                 {startedAt ? (
                                     <div className="grid gap-4 sm:grid-cols-2">
+                                        {!isOnBreak ? (
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 router.post(
                                                     route('checkin.break'),
                                                     {},
-                                                    { preserveScroll: true }
+                                                    {
+                                                        preserveScroll: true,
+                                                        onSuccess: () => {
+                                                            setIsOnBreak(true)
+                                                            setBreakAt(new Date())
+                                                            setElapsedBreak(0)
+                                                        },
+                                                    }
                                                 )
                                             }
                                             className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-left shadow hover:shadow-md transition dark:border-amber-900/40 dark:bg-amber-900/20"
@@ -244,14 +278,38 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
                                                 </div>
                                             </div>
                                         </button>
-
+                                        ) : (
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                router.post(route('checkin.checkout'), {}, {
-                                                    onSuccess: () => setStartedAt(null),
-                                                })
+                                                router.post(
+                                                    route('checkin.break.end'),
+                                                    {},
+                                                    {
+                                                        preserveScroll: true,
+                                                        onSuccess: () => {
+                                                            setIsOnBreak(false)
+                                                            setBreakAt(null)
+                                                            setElapsedBreak(0)
+                                                        },
+                                                    }
+                                                )
                                             }
+                                            className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left shadow hover:shadow-md transition dark:border-emerald-900/40 dark:bg-emerald-900/20"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white">▶</span>
+                                                <div>
+                                                    <div className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">Back to work</div>
+                                                    <div className="text-sm text-emerald-700/80 dark:text-emerald-400/80">Resume your shift. Break will be recorded.</div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setConfirmOpen(true)}
                                             className="rounded-2xl border border-red-200 bg-red-50 p-6 text-left shadow hover:shadow-md transition dark:border-red-900/40 dark:bg-red-900/20"
                                         >
                                             <div className="flex items-center gap-3">
@@ -402,6 +460,35 @@ export default function CheckIn({ user, employer, checkedInAt }: CheckInProps) {
                         </div>
                     </div>
                 </div>
+                {/* Confirmation modal for checkout */}
+                <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Check out?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will end your current check-in. Any active break will be closed as well. Do you want to continue?
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={() => {
+                                    setConfirmOpen(false)
+                                    router.post(route('checkin.checkout'), {}, {
+                                        onSuccess: () => {
+                                            setStartedAt(null)
+                                            setIsOnBreak(false)
+                                            setBreakAt(null)
+                                            setElapsedBreak(0)
+                                        },
+                                    })
+                                }}
+                            >
+                                Confirm
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </>
         </FullSplitLayout>
     )

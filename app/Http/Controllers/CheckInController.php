@@ -40,6 +40,26 @@ final class CheckInController extends Controller
             $checkedInAt = $base->toAtomString();
         }
 
+        // If there's an active break, expose its start as breakStartedAt
+        $openBreak = null;
+        if ($openAttendance) {
+            $openBreak = Attendance::query()
+                ->where('user_id', $user->id)
+                ->where('type', 'breaks')
+                ->whereNull('end_time')
+                ->latest('id')
+                ->first();
+        }
+
+        $breakStartedAt = null;
+        if ($openBreak) {
+            $base = Date::parse($openBreak->date);
+            if (! empty($openBreak->start_time)) {
+                $base = $base->copy()->setTimeFromTimeString($openBreak->start_time);
+            }
+            $breakStartedAt = $base->toAtomString();
+        }
+
         return Inertia::render('checkin/index', [
             'user' => [
                 'id' => $user->id,
@@ -52,6 +72,7 @@ final class CheckInController extends Controller
                 'email' => $team->user->email,
             ] : null,
             'checkedInAt' => $checkedInAt,
+            'breakStartedAt' => $breakStartedAt,
         ]);
     }
 
@@ -133,6 +154,40 @@ final class CheckInController extends Controller
         ]);
 
         return back()->with('success', 'Break started.');
+    }
+
+    public function endBreak(): RedirectResponse
+    {
+        $user = auth()->user();
+
+        // Ensure there is an open clock-in
+        $openClockIn = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'clockin')
+            ->whereNull('end_time')
+            ->latest('id')
+            ->first();
+
+        if (! $openClockIn) {
+            return back()->with('error', 'You are not currently checked in.');
+        }
+
+        // Find open break
+        $openBreak = Attendance::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'breaks')
+            ->whereNull('end_time')
+            ->latest('id')
+            ->first();
+
+        if (! $openBreak) {
+            return back()->with('error', 'No active break to end.');
+        }
+
+        $openBreak->end_time = now()->format('H:i:s');
+        $openBreak->save();
+
+        return back()->with('success', 'Welcome back! Break ended.');
     }
 
     public function checkout(): RedirectResponse
