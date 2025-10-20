@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Team\CreateTeamMemberAction;
+use App\Actions\Team\RemoveTeamMemberAction;
+use App\Actions\Team\UpdateTeamMemberAction;
 use App\Http\Mappers\Team\TeamListMapper;
 use App\Http\QueryBuilders\Team\TeamListSearchableQuery;
 use App\Http\QueryBuilders\Team\TimeLogQuery;
@@ -89,13 +91,13 @@ final class TeamController extends Controller
      * @throws Throwable
      */
     #[Action(method: 'put', name: 'team.update', params: ['user'], middleware: ['auth', 'verified'])]
-    public function update(UpdateTeamMemberRequest $request, User $user): void
+    public function update(UpdateTeamMemberRequest $request, User $user, UpdateTeamMemberAction $updateTeamMemberAction): void
     {
         Gate::authorize('update', $user);
 
         $data = $request->validated();
 
-        $result = TeamStore::updateMemberForUser(
+        $result = $updateTeamMemberAction->handle(
             ownerUserId: auth()->id(),
             memberUser: $user,
             data: $data,
@@ -110,13 +112,14 @@ final class TeamController extends Controller
      * @throws Throwable
      */
     #[Action(method: 'delete', name: 'team.destroy', params: ['user'], middleware: ['auth', 'verified'])]
-    public function destroy(User $user): void
+    public function destroy(User $user, RemoveTeamMemberAction $removeTeamMemberAction): void
     {
         Gate::authorize('delete', $user);
 
         DB::beginTransaction();
+
         try {
-            TeamStore::removeUserFromTeam(teamLeaderId: auth()->id(), memberId: $user->getKey());
+            $removeTeamMemberAction->handle(teamLeaderId: auth()->id(), memberId: $user->getKey());
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
