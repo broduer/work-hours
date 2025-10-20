@@ -11,7 +11,15 @@ import {
 import FullSplitLayout from '@/layouts/full-split-layout'
 import type { User } from '@/types'
 import { Head, router } from '@inertiajs/react'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { KeyboardEvent, useEffect, useRef, useState, type FormEvent } from 'react'
+
+interface TodayEntry {
+    type: 'clockin' | 'breaks'
+    start_time: string
+    end_time?: string | null
+    duration_seconds: number
+}
 
 interface CheckInProps {
     user: User
@@ -20,6 +28,7 @@ interface CheckInProps {
     breakStartedAt?: string | null
     totalWorkedSecondsToday?: number
     totalBreakSecondsToday?: number
+    entriesToday?: TodayEntry[]
 }
 
 export default function CheckIn({
@@ -29,6 +38,7 @@ export default function CheckIn({
     breakStartedAt,
     totalWorkedSecondsToday = 0,
     totalBreakSecondsToday = 0,
+    entriesToday = [],
 }: CheckInProps) {
     const [pin, setPin] = useState(['', '', '', ''])
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -40,6 +50,7 @@ export default function CheckIn({
     const [breakAt, setBreakAt] = useState<Date | null>(breakStartedAt ? new Date(breakStartedAt) : null)
     const [elapsedBreak, setElapsedBreak] = useState<number>(0)
     const [currentTime, setCurrentTime] = useState(new Date())
+    const [detailsOpen, setDetailsOpen] = useState(false)
     const inputRefs = useRef<(HTMLInputElement | null)[]>([null, null, null, null])
     const today = new Date()
     const currentDate = today.toLocaleDateString('en-US', {
@@ -57,15 +68,13 @@ export default function CheckIn({
     }
 
     const greeting = getGreeting()
-
-    // Update current time every minute
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 60000);
+            setCurrentTime(new Date())
+        }, 60000)
 
-        return () => clearInterval(interval);
-    }, []);
+        return () => clearInterval(interval)
+    }, [])
 
     useEffect(() => {
         inputRefs.current[0]?.focus()
@@ -163,7 +172,6 @@ export default function CheckIn({
     }
 
     const isPinComplete = pin.every((digit) => digit !== '')
-    // Use server-provided totals directly to avoid double counting running timers
     const workedSecondsNow = totalWorkedSecondsToday
     const breakSecondsNow = totalBreakSecondsToday
 
@@ -172,35 +180,33 @@ export default function CheckIn({
         const display = hours > 0 && hours < 0.01 ? 0.01 : hours
         return `${display.toFixed(2)} h`
     }
-
-    // Function to format current time
     const formatTime = (date: Date) => {
         return date.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
-            hour12: true
-        });
-    };
-
-    // Calculate progress percentage for the timeline visualization
-    const calculateWorkProgress = () => {
-        // Calculate percentage of work time relative to an 8-hour workday
-        const eightHoursInSeconds = 8 * 60 * 60;
-        const percentage = Math.min(100, (workedSecondsNow / eightHoursInSeconds) * 100);
-        return `${percentage}%`;
-    };
+            hour12: true,
+        })
+    }
 
     return (
         <FullSplitLayout>
             <Head title="Employee Check-in" />
             <>
-                {/* Modern Header with current date and time */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600/90 to-indigo-700/90 shadow-lg backdrop-blur-sm dark:from-blue-900/90 dark:to-indigo-900/90">
+                <div className="fixed top-0 right-0 left-0 z-50 bg-gradient-to-r from-blue-600/90 to-indigo-700/90 shadow-lg backdrop-blur-sm dark:from-blue-900/90 dark:to-indigo-900/90">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <div className="flex items-center space-x-3">
                             <div className="rounded-full bg-white/90 p-1.5 dark:bg-gray-800/90">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-700 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 text-blue-700 dark:text-blue-400"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                        clipRule="evenodd"
+                                    />
                                 </svg>
                             </div>
                             <h1 className="text-lg font-semibold text-white">Work Hours</h1>
@@ -217,17 +223,28 @@ export default function CheckIn({
                 <div className="flex min-h-screen items-center justify-center pt-16">
                     <div className="mx-auto my-8 grid w-full max-w-7xl grid-cols-1 overflow-hidden rounded-3xl shadow-2xl md:grid-cols-2">
                         <div className="relative flex flex-col justify-center bg-gradient-to-br from-white to-blue-50 p-8 dark:from-gray-800 dark:to-gray-900">
-                            {/* Decorative elements */}
-                            <div className="absolute top-0 left-0 h-40 w-40 rounded-br-[6rem] bg-blue-600/10 dark:bg-blue-600/20" aria-hidden="true"></div>
-                            <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-blue-500/5 dark:bg-blue-600/5" aria-hidden="true"></div>
-                            <div className="absolute top-1/4 right-12 h-24 w-24 rounded-full bg-blue-500/10 dark:bg-blue-600/10" aria-hidden="true"></div>
+                            <div
+                                className="absolute top-0 left-0 h-40 w-40 rounded-br-[6rem] bg-blue-600/10 dark:bg-blue-600/20"
+                                aria-hidden="true"
+                            ></div>
+                            <div
+                                className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-blue-500/5 dark:bg-blue-600/5"
+                                aria-hidden="true"
+                            ></div>
+                            <div
+                                className="absolute top-1/4 right-12 h-24 w-24 rounded-full bg-blue-500/10 dark:bg-blue-600/10"
+                                aria-hidden="true"
+                            ></div>
 
                             <div className="relative z-10">
                                 <div className="mb-8 space-y-4">
                                     <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">{greeting},</h1>
                                     <div className="mt-2 flex items-center space-x-4">
                                         <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/20 dark:from-blue-600 dark:to-blue-800 dark:shadow-blue-800/10">
-                                            <span className="text-xl font-bold text-white">{user.name.charAt(0)}{user.name.split(' ')[1]?.[0] || ''}</span>
+                                            <span className="text-xl font-bold text-white">
+                                                {user.name.charAt(0)}
+                                                {user.name.split(' ')[1]?.[0] || ''}
+                                            </span>
                                         </div>
                                         <div>
                                             <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">{user.name}</h2>
@@ -236,7 +253,6 @@ export default function CheckIn({
                                     </div>
                                 </div>
 
-                                {/* Employer card with improved design */}
                                 <div className="relative mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800/70">
                                     <div className="absolute -top-3 left-4 rounded-md bg-white px-2 py-0.5 dark:bg-gray-800">
                                         <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">Employer Information</h2>
@@ -246,8 +262,17 @@ export default function CheckIn({
                                             <div className="space-y-3">
                                                 <div className="flex items-center space-x-3">
                                                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-5 w-5"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                                                                clipRule="evenodd"
+                                                            />
                                                         </svg>
                                                     </div>
                                                     <p className="text-lg font-medium text-gray-800 dark:text-gray-200">{employer.name}</p>
@@ -267,8 +292,17 @@ export default function CheckIn({
                                             </div>
                                         ) : (
                                             <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5 text-gray-400"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z"
+                                                        clipRule="evenodd"
+                                                    />
                                                 </svg>
                                                 <p>No employer information found.</p>
                                             </div>
@@ -276,29 +310,19 @@ export default function CheckIn({
                                     </div>
                                 </div>
 
-                                {/* Status Card - Shows when checked in */}
                                 {startedAt && (
                                     <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800/70">
-                                        <div className="bg-blue-50 px-4 py-2 dark:bg-blue-900/20">
+                                        <div className="flex items-center justify-between bg-blue-50 px-4 py-2 dark:bg-blue-900/20">
                                             <h3 className="font-medium text-blue-700 dark:text-blue-300">Today's Work Status</h3>
+                                            <button
+                                                type="button"
+                                                onClick={() => setDetailsOpen(true)}
+                                                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-700 dark:hover:bg-blue-600"
+                                            >
+                                                Details
+                                            </button>
                                         </div>
                                         <div className="p-4">
-                                            {/* Timeline visualization */}
-                                            <div className="mb-4">
-                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                                    <span>Start</span>
-                                                    <span>{Math.floor(workedSecondsNow / 3600)} hrs</span>
-                                                    <span>8 hrs</span>
-                                                </div>
-                                                <div className="mt-1 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                                                    <div
-                                                        className="h-2 rounded-full bg-blue-500 dark:bg-blue-600"
-                                                        style={{ width: calculateWorkProgress() }}
-                                                    ></div>
-                                                </div>
-                                            </div>
-
-                                            {/* Work stats */}
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="rounded-lg bg-blue-50/80 p-3 dark:bg-blue-900/20">
                                                     <div className="text-xs font-medium text-blue-700 dark:text-blue-300">Work Time</div>
@@ -316,26 +340,6 @@ export default function CheckIn({
                                         </div>
                                     </div>
                                 )}
-
-                                {/* Help card */}
-                                <div className="mt-8 rounded-xl border-l-4 border-blue-500 bg-blue-50 p-4 shadow-sm dark:border-blue-600 dark:bg-blue-900/20">
-                                    <div className="flex">
-                                        <div className="flex-shrink-0">
-                                            <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <div className="ml-3">
-                                            <p className="text-sm text-blue-800 dark:text-blue-300">
-                                                Enter your 4-digit PIN to check in for work. Your PIN is private and should not be shared with others.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             <div
@@ -344,11 +348,9 @@ export default function CheckIn({
                             ></div>
                         </div>
 
-                        {/* Divider between columns */}
                         <div className="absolute top-[10%] left-1/2 hidden h-[80%] w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent md:block dark:via-gray-700"></div>
 
                         <div className="relative flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30 p-8 dark:from-slate-900 dark:to-gray-900">
-                            {/* Decorative elements */}
                             <div
                                 className="absolute top-0 right-0 h-32 w-32 rounded-bl-full bg-blue-100/30 dark:bg-blue-900/10"
                                 aria-hidden="true"
@@ -357,26 +359,29 @@ export default function CheckIn({
                                 className="absolute bottom-0 left-0 h-24 w-24 rounded-tr-full bg-blue-100/30 dark:bg-blue-900/10"
                                 aria-hidden="true"
                             ></div>
-                            <div className="absolute top-1/3 left-8 h-16 w-16 rounded-full bg-blue-100/50 dark:bg-blue-900/20" aria-hidden="true"></div>
-                            <div className="absolute bottom-1/4 right-10 h-20 w-20 rounded-full bg-blue-100/40 dark:bg-blue-900/15" aria-hidden="true"></div>
+                            <div
+                                className="absolute top-1/3 left-8 h-16 w-16 rounded-full bg-blue-100/50 dark:bg-blue-900/20"
+                                aria-hidden="true"
+                            ></div>
+                            <div
+                                className="absolute right-10 bottom-1/4 h-20 w-20 rounded-full bg-blue-100/40 dark:bg-blue-900/15"
+                                aria-hidden="true"
+                            ></div>
 
                             <div className="relative z-10 w-full max-w-md">
-                                {/* Main timer display when checked in */}
                                 {startedAt && (
                                     <div className="mb-6 overflow-hidden rounded-2xl bg-white shadow-xl dark:border dark:border-gray-700 dark:bg-gray-800">
                                         <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 text-center text-white dark:from-blue-700 dark:to-blue-800">
                                             <p className="text-sm font-medium text-blue-100">
                                                 {isOnBreak ? 'Checked in (paused)' : 'Active Session'}
                                             </p>
-                                            <p className="mt-1 font-mono text-4xl font-bold tabular-nums tracking-tight">
-                                                {formatElapsed(elapsed)}
-                                            </p>
+                                            <p className="mt-1 font-mono text-4xl font-bold tracking-tight tabular-nums">{formatElapsed(elapsed)}</p>
                                         </div>
                                         <div className="p-4">
                                             <div className="flex items-center justify-center">
                                                 <div className="inline-flex rounded-lg bg-blue-50 p-1 dark:bg-blue-900/30">
                                                     <div className="rounded-md px-3 py-1 text-sm font-medium text-blue-700 dark:text-blue-300">
-                                                        Started at: {startedAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                        Started at: {startedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </div>
                                                 </div>
                                             </div>
@@ -384,17 +389,20 @@ export default function CheckIn({
                                     </div>
                                 )}
 
-                                {/* Break timer display */}
                                 {isOnBreak && (
                                     <div className="mb-6 overflow-hidden rounded-2xl bg-white shadow-xl dark:border dark:border-gray-700 dark:bg-gray-800">
                                         <div className="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4 text-center text-white dark:from-amber-700 dark:to-amber-800">
                                             <div className="flex items-center justify-center gap-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                        clipRule="evenodd"
+                                                    />
                                                 </svg>
                                                 <p className="text-sm font-medium">Break in Progress</p>
                                             </div>
-                                            <p className="mt-1 font-mono text-4xl font-bold tabular-nums tracking-tight">
+                                            <p className="mt-1 font-mono text-4xl font-bold tracking-tight tabular-nums">
                                                 {formatElapsed(elapsedBreak)}
                                             </p>
                                         </div>
@@ -404,7 +412,6 @@ export default function CheckIn({
                                     </div>
                                 )}
 
-                                {/* Actions for checked-in state */}
                                 {startedAt ? (
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         {!isOnBreak ? (
@@ -431,9 +438,7 @@ export default function CheckIn({
                                                 </span>
                                                 <div className="mt-4 text-center">
                                                     <div className="text-lg font-semibold text-amber-800 dark:text-amber-300">Take a break</div>
-                                                    <div className="text-sm text-amber-700/80 dark:text-amber-400/80">
-                                                        Pause your work timer
-                                                    </div>
+                                                    <div className="text-sm text-amber-700/80 dark:text-amber-400/80">Pause your work timer</div>
                                                 </div>
                                             </button>
                                         ) : (
@@ -459,12 +464,8 @@ export default function CheckIn({
                                                     ▶
                                                 </span>
                                                 <div className="mt-4 text-center">
-                                                    <div className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">
-                                                        Back to work
-                                                    </div>
-                                                    <div className="text-sm text-emerald-700/80 dark:text-emerald-400/80">
-                                                        Resume your shift
-                                                    </div>
+                                                    <div className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">Back to work</div>
+                                                    <div className="text-sm text-emerald-700/80 dark:text-emerald-400/80">Resume your shift</div>
                                                 </div>
                                             </button>
                                         )}
@@ -479,15 +480,12 @@ export default function CheckIn({
                                             </span>
                                             <div className="mt-4 text-center">
                                                 <div className="text-lg font-semibold text-red-800 dark:text-red-300">Check out</div>
-                                                <div className="text-sm text-red-700/80 dark:text-red-400/80">
-                                                    Finish your workday
-                                                </div>
+                                                <div className="text-sm text-red-700/80 dark:text-red-400/80">Finish your workday</div>
                                             </div>
                                         </button>
                                     </div>
                                 ) : (
                                     <div className="relative mb-3 overflow-hidden rounded-3xl bg-white shadow-2xl transition-all duration-300 hover:shadow-2xl dark:border dark:border-gray-700 dark:bg-gray-800">
-                                        {/* Decorative top border */}
                                         <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-500"></div>
 
                                         <form id="pin-form" onSubmit={handleSubmit} className="space-y-8 p-8">
@@ -615,11 +613,14 @@ export default function CheckIn({
                                             </div>
                                         </form>
 
-                                        {/* Current date display at the bottom */}
                                         <div className="border-t border-gray-100 bg-gray-50/80 px-8 py-4 text-center dark:border-gray-800 dark:bg-gray-800/50">
                                             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                                        clipRule="evenodd"
+                                                    />
                                                 </svg>
                                                 <span className="font-medium">{currentDate}</span>
                                             </div>
@@ -627,11 +628,8 @@ export default function CheckIn({
                                     </div>
                                 )}
 
-                                {/* Help text */}
                                 <div className="mt-6 text-center">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        Need help? Contact your administrator
-                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Need help? Contact your administrator</p>
                                     <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
                                         &copy; {new Date().getFullYear()} Your Company. All rights reserved.
                                     </p>
@@ -649,7 +647,9 @@ export default function CheckIn({
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel className="border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Cancel</AlertDialogCancel>
+                            <AlertDialogCancel className="border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                                Cancel
+                            </AlertDialogCancel>
                             <AlertDialogAction
                                 className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
                                 onClick={() => {
@@ -673,6 +673,47 @@ export default function CheckIn({
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
+
+                <Sheet open={detailsOpen} onOpenChange={setDetailsOpen}>
+                    <SheetContent side="right" className="overflow-y-auto bg-white pr-6 pb-8 pl-6 sm:max-w-md md:max-w-lg dark:bg-gray-900">
+                        <SheetHeader className="mb-6">
+                            <SheetTitle className="flex items-center gap-2 text-xl text-gray-900 dark:text-white">
+                                Today's Details
+                            </SheetTitle>
+                            <SheetDescription className="text-sm text-gray-500 dark:text-gray-400">
+                                All clock-ins and breaks recorded today
+                            </SheetDescription>
+                        </SheetHeader>
+
+                        <div className="space-y-4">
+                            {entriesToday.length === 0 && (
+                                <div className="rounded-lg border border-gray-200 bg-white p-4 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                    No entries for today yet.
+                                </div>
+                            )}
+
+                            {entriesToday.map((entry, idx) => {
+                                const label = entry.type === 'clockin' ? 'Work session' : 'Break'
+                                const start = entry.start_time?.slice(0, 5)
+                                const end = entry.end_time ? entry.end_time.slice(0, 5) : 'ongoing'
+                                return (
+                                    <div
+                                        key={idx}
+                                        className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                                    >
+                                        <div>
+                                            <div className="text-sm font-medium text-gray-900 dark:text-white">{label}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400">{start} - {end}</div>
+                                        </div>
+                                        <div className="font-mono text-sm text-gray-700 dark:text-gray-200">
+                                            {formatElapsed(entry.duration_seconds)}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </SheetContent>
+                </Sheet>
             </>
         </FullSplitLayout>
     )

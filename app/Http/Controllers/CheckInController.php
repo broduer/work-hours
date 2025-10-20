@@ -63,10 +63,13 @@ final class CheckInController extends Controller
         $attendancesToday = Attendance::query()
             ->where('user_id', $user->id)
             ->whereDate('date', $todayStr)
+            ->orderBy('start_time')
             ->get(['type', 'start_time', 'end_time']);
 
         $totalClockinSeconds = 0;
         $totalBreakSeconds = 0;
+
+        $entriesToday = [];
 
         foreach ($attendancesToday as $row) {
             $start = Date::parse($todayStr . ' ' . $row->start_time);
@@ -78,6 +81,13 @@ final class CheckInController extends Controller
             } elseif ($row->type === 'breaks') {
                 $totalBreakSeconds += $seconds;
             }
+
+            $entriesToday[] = [
+                'type' => $row->type,
+                'start_time' => $row->start_time,
+                'end_time' => $row->end_time,
+                'duration_seconds' => $seconds,
+            ];
         }
 
         return Inertia::render('checkin/index', [
@@ -95,6 +105,7 @@ final class CheckInController extends Controller
             'breakStartedAt' => $breakStartedAt,
             'totalWorkedSecondsToday' => $totalClockinSeconds,
             'totalBreakSecondsToday' => $totalBreakSeconds,
+            'entriesToday' => $entriesToday,
         ]);
     }
 
