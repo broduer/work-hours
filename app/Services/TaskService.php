@@ -74,7 +74,7 @@ final readonly class TaskService
         $users = User::query()->whereIn('id', $userIds)->get();
         foreach ($users as $user) {
             $user->notify(new TaskAssigned($task, auth()->user()));
-            \App\Events\TaskAssigned::dispatch($task, auth()->user(), $user);
+            event(new \App\Events\TaskAssigned($task, auth()->user(), $user));
         }
     }
 
@@ -95,7 +95,7 @@ final readonly class TaskService
 
             $projectOwner = User::query()->find($task->project->user_id);
             $projectOwner?->notify(new TaskCompleted($task, auth()->user()));
-            \App\Events\TaskCompleted::dispatch($task, auth()->user(), $projectOwner);
+            event(new \App\Events\TaskCompleted($task, auth()->user(), $projectOwner));
         }
     }
 

@@ -57,7 +57,7 @@ final class NotificationsController extends Controller
         $user = auth()->user();
         $user->unreadNotifications->markAsRead();
 
-        MarkAsReadNotification::dispatch($user->getKey());
+        event(new MarkAsReadNotification($user->getKey()));
 
         return response()->json(['message' => 'All notifications marked as read']);
     }
@@ -78,7 +78,7 @@ final class NotificationsController extends Controller
 
             $notification->markAsRead();
 
-            MarkAsReadNotification::dispatch($user->getKey());
+            event(new MarkAsReadNotification($user->getKey()));
 
             return response()->json(['message' => 'Notification marked as read']);
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface) {

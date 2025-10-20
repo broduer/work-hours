@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 final class TasksRecurCommand extends Command
@@ -34,7 +35,7 @@ final class TasksRecurCommand extends Command
             return self::FAILURE;
         }
 
-        $today = Carbon::today();
+        $today = Date::today();
 
         $query = Task::query()
             ->where('is_recurring', true)
@@ -46,7 +47,7 @@ final class TasksRecurCommand extends Command
 
         $query->chunkById(200, function ($tasks) use (&$count, $frequency): void {
             foreach ($tasks as $task) {
-                $nextDue = $this->nextDueDate(Carbon::parse($task->due_date), $frequency);
+                $nextDue = $this->nextDueDate(Date::parse($task->due_date), $frequency);
                 $exists = Task::query()
                     ->where('project_id', $task->project_id)
                     ->where('title', $task->title)

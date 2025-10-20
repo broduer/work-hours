@@ -50,7 +50,7 @@ final class GoogleAuthController extends Controller
         } catch (Exception $e) {
             Log::error($e);
 
-            return redirect()->route('login')->with('status', 'Google authentication failed. Please try again.');
+            return to_route('login')->with('status', 'Google authentication failed. Please try again.');
         }
     }
 }

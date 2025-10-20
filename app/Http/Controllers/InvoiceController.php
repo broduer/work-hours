@@ -13,10 +13,10 @@ use App\Models\Invoice;
 use App\Models\TimeLog;
 use App\Notifications\InvoiceStatusChanged;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -115,7 +115,7 @@ final class InvoiceController extends Controller
     public function invoiceExport(): StreamedResponse
     {
         $headers = ['ID', 'Invoice Number', 'Client', 'Issue Date', 'Due Date', 'Total Amount', 'Paid Amount', 'Status', 'Created At'];
-        $filename = 'invoices_' . Carbon::now()->format('Y-m-d') . '.csv';
+        $filename = 'invoices_' . Date::now()->format('Y-m-d') . '.csv';
 
         return response()->streamDownload(function () use ($headers): void {
             $output = fopen('php://output', 'w');
@@ -208,8 +208,8 @@ final class InvoiceController extends Controller
     public function updateStatus(Invoice $invoice): void
     {
         request()->validate([
-            'status' => 'required|string|in:draft,sent,paid,partially_paid,overdue,cancelled',
-            'paid_amount' => 'required_if:status,paid,partially_paid|numeric|min:0',
+            'status' => ['required', 'string', 'in:draft,sent,paid,partially_paid,overdue,cancelled'],
+            'paid_amount' => ['required_if:status,paid,partially_paid', 'numeric', 'min:0'],
         ]);
 
         $newStatus = request('status');

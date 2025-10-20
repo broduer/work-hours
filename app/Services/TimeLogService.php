@@ -16,8 +16,8 @@ use App\Models\Team;
 use App\Models\TimeLog;
 use App\Models\User;
 use App\Notifications\TimeLogEntry;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Date;
 
 final readonly class TimeLogService
 {
@@ -61,11 +61,11 @@ final readonly class TimeLogService
         $isLogCompleted = ! empty($data['start_timestamp']) && ! empty($data['end_timestamp']);
 
         if ($isLogCompleted) {
-            $start = Carbon::parse($data['start_timestamp']);
-            $end = Carbon::parse($data['end_timestamp']);
+            $start = Date::parse($data['start_timestamp']);
+            $end = Date::parse($data['end_timestamp']);
 
             if ($start->format('Y-m-d') !== $end->format('Y-m-d')) {
-                $end = Carbon::parse($end->format('H:i:s'))->setDateFrom($start);
+                $end = Date::parse($end->format('H:i:s'))->setDateFrom($start);
                 $data['end_timestamp'] = $end->toDateTimeString();
             }
 
@@ -74,7 +74,7 @@ final readonly class TimeLogService
             if ($project && $project->isCreator(auth()->id())) {
                 $data['status'] = TimeLogStatus::APPROVED;
                 $data['approved_by'] = auth()->id();
-                $data['approved_at'] = Carbon::now();
+                $data['approved_at'] = Date::now();
             } else {
                 $data['status'] = TimeLogStatus::PENDING;
             }
@@ -104,7 +104,7 @@ final readonly class TimeLogService
             if ($task) {
                 if ($markAsComplete) {
                     $task->update(['status' => 'completed']);
-                    TaskCompleted::dispatch($task, auth()->user(), $task->project->user);
+                    event(new TaskCompleted($task, auth()->user(), $task->project->user));
                 }
 
                 $canRunIntegrations = ! $requireCompleteForIntegrations || $markAsComplete;
@@ -129,7 +129,7 @@ final readonly class TimeLogService
             $teamLeader = User::teamLeader(project: $timeLog->project);
             if (auth()->id() !== $teamLeader->getKey()) {
                 $teamLeader->notify(new TimeLogEntry($timeLog, auth()->user()));
-                TimeLogEntryCreated::dispatch($timeLog, auth()->user(), $teamLeader);
+                event(new TimeLogEntryCreated($timeLog, auth()->user(), $teamLeader));
             }
         }
     }

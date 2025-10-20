@@ -48,7 +48,7 @@ final class TagController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:50',
+            'name' => ['required', 'string', 'max:50'],
         ]);
 
         $tag = Tag::query()->firstOrCreate([
@@ -69,8 +69,8 @@ final class TagController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:50',
-            'color' => 'nullable|string|regex:/^#[0-9a-fA-F]{6}$/',
+            'name' => ['required', 'string', 'max:50'],
+            'color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
         ]);
 
         $existingTag = Tag::query()->where('user_id', auth()->id())

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Inertia\Testing\AssertableInertia as Assert;
 
 uses(RefreshDatabase::class);
@@ -12,7 +12,7 @@ uses(RefreshDatabase::class);
 it('shows verified user registration trend on the admin dashboard', function (): void {
     // Admin user (must be verified to pass verified middleware)
     $admin = User::factory()->create([
-        'email_verified_at' => Carbon::now(),
+        'email_verified_at' => Date::now(),
     ]);
     config()->set('app.admin_ids', [$admin->id]);
 
@@ -22,7 +22,7 @@ it('shows verified user registration trend on the admin dashboard', function ():
     ]);
 
     // Verified users within 30 days
-    $today = Carbon::today();
+    $today = Date::today();
 
     // 2 users today
     User::factory()->count(2)->create([

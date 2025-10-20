@@ -23,22 +23,23 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Facades\Date;
 
 final class TimeLogStore
 {
     public static function dailyTrend(array $teamMembersIds, int $userId, int $days = 7, ?Carbon $startDate = null, ?Carbon $endDate = null, ?int $projectOwnerId = null): array
     {
         if ($startDate instanceof Carbon || $endDate instanceof Carbon) {
-            $startDate = ($startDate ?? Carbon::today())->copy()->startOfDay();
-            $endDate = ($endDate ?? Carbon::today())->copy()->endOfDay();
+            $startDate = ($startDate ?? Date::today())->copy()->startOfDay();
+            $endDate = ($endDate ?? Date::today())->copy()->endOfDay();
 
             if ($endDate->lt($startDate)) {
                 [$startDate, $endDate] = [$endDate, $startDate];
             }
         } else {
             $days = max(1, $days);
-            $startDate = Carbon::today()->subDays($days - 1)->startOfDay();
-            $endDate = Carbon::today()->endOfDay();
+            $startDate = Date::today()->subDays($days - 1)->startOfDay();
+            $endDate = Date::today()->endOfDay();
         }
 
         $logs = TimeLog::query()
@@ -426,9 +427,9 @@ final class TimeLogStore
                 'task_description' => $timeLog->task ? $timeLog->task->description : null,
                 'task_status' => $timeLog->task ? $timeLog->task->status : null,
                 'task_priority' => $timeLog->task ? $timeLog->task->priority : null,
-                'task_due_date' => $timeLog->task && $timeLog->task->due_date ? Carbon::parse($timeLog->task->due_date)->toDateString() : null,
-                'start_timestamp' => Carbon::parse($timeLog->start_timestamp)->toDateTimeString(),
-                'end_timestamp' => $timeLog->end_timestamp ? Carbon::parse($timeLog->end_timestamp)->toDateTimeString() : null,
+                'task_due_date' => $timeLog->task && $timeLog->task->due_date ? Date::parse($timeLog->task->due_date)->toDateString() : null,
+                'start_timestamp' => Date::parse($timeLog->start_timestamp)->toDateTimeString(),
+                'end_timestamp' => $timeLog->end_timestamp ? Date::parse($timeLog->end_timestamp)->toDateTimeString() : null,
                 'duration' => $timeLog->duration ? round($timeLog->duration, 2) : 0,
                 'note' => $timeLog->note,
                 'is_paid' => $timeLog->is_paid,

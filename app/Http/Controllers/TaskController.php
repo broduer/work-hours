@@ -15,10 +15,10 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Services\TaskService;
 use App\Traits\ExportableTrait;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Concurrency;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -440,7 +440,7 @@ final class TaskController extends Controller
         $tasks = TaskStore::userTasks(userId: auth()->id());
         $mappedTasks = TaskStore::taskExportMapper(tasks: $tasks);
         $headers = TaskStore::taskExportHeaders();
-        $filename = 'tasks_' . Carbon::now()->format('Y-m-d') . '.csv';
+        $filename = 'tasks_' . Date::now()->format('Y-m-d') . '.csv';
 
         return $this->exportToCsv($mappedTasks, $headers, $filename);
     }

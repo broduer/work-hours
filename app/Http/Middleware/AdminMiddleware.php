@@ -24,6 +24,6 @@ final class AdminMiddleware
             return $next($request);
         }
 
-        return redirect()->route('dashboard')->with('error', 'You do not have permission to access the admin area.');
+        return to_route('dashboard')->with('error', 'You do not have permission to access the admin area.');
     }
 }

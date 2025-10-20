@@ -21,10 +21,10 @@ use App\Notifications\TimeLogPaid;
 use App\Services\ApprovalService;
 use App\Services\TimeLogService;
 use App\Traits\ExportableTrait;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -235,12 +235,12 @@ final class TimeLogController extends Controller
 
                 if ($currentUser->id === $teamLeader->id && $currentUser->id !== $timeLogOwner->id) {
                     $timeLogOwner->notify(new TimeLogPaid($timeLog, $currentUser));
-                    \App\Events\TimeLogPaid::dispatch($timeLog, $currentUser, $timeLogOwner);
+                    event(new \App\Events\TimeLogPaid($timeLog, $currentUser, $timeLogOwner));
                 }
 
                 if ($currentUser->id !== $teamLeader->id && $currentUser->id === $timeLogOwner->id) {
                     $teamLeader->notify(new TimeLogPaid($timeLog, $currentUser));
-                    \App\Events\TimeLogPaid::dispatch($timeLog, $currentUser, $teamLeader);
+                    event(new \App\Events\TimeLogPaid($timeLog, $currentUser, $teamLeader));
                 }
             }
 
@@ -277,7 +277,7 @@ final class TimeLogController extends Controller
         $timeLogs = TimeLogStore::timeLogs(baseQuery: $this->timeLogService->baseQuery());
         $mappedTimeLogs = TimeLogStore::timeLogExportMapper(timeLogs: $timeLogs);
         $headers = TimeLogStore::timeLogExportHeaders();
-        $filename = 'time_logs_' . Carbon::now()->format('Y-m-d') . '.csv';
+        $filename = 'time_logs_' . Date::now()->format('Y-m-d') . '.csv';
 
         return $this->exportToCsv($mappedTimeLogs, $headers, $filename);
     }
@@ -353,8 +353,8 @@ final class TimeLogController extends Controller
         }
 
         $sheet->setCellValue('A2', $projects[0] ?? '');
-        $sheet->setCellValue('B2', Carbon::now()->format('Y-m-d H:i:s'));
-        $sheet->setCellValue('C2', Carbon::now()->addHours(2)->format('Y-m-d H:i:s'));
+        $sheet->setCellValue('B2', Date::now()->format('Y-m-d H:i:s'));
+        $sheet->setCellValue('C2', Date::now()->addHours(2)->format('Y-m-d H:i:s'));
         $sheet->setCellValue('D2', 'Example note');
 
         foreach (range('A', 'D') as $column) {
@@ -362,7 +362,7 @@ final class TimeLogController extends Controller
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'time_log_template_' . Carbon::now()->format('Y-m-d') . '.xlsx';
+        $filename = 'time_log_template_' . Date::now()->format('Y-m-d') . '.xlsx';
 
         return response()->streamDownload(function () use ($writer): void {
             $writer->save('php://output');

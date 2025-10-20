@@ -25,7 +25,7 @@ final class AiChatController extends Controller
     {
         try {
             $histories = AiChatHistory::query()->where('user_id', auth()->id())
-                ->orderBy('updated_at', 'desc')
+                ->latest('updated_at')
                 ->get();
 
             return response()->json([
@@ -52,7 +52,7 @@ final class AiChatController extends Controller
     public function getChatHistory(Request $request): JsonResponse
     {
         $request->validate([
-            'id' => 'required|integer|exists:ai_chat_histories,id',
+            'id' => ['required', 'integer', 'exists:ai_chat_histories,id'],
         ]);
 
         try {
@@ -84,7 +84,7 @@ final class AiChatController extends Controller
     public function deleteChatHistory(Request $request): JsonResponse
     {
         $request->validate([
-            'id' => 'required|integer|exists:ai_chat_histories,id',
+            'id' => ['required', 'integer', 'exists:ai_chat_histories,id'],
         ]);
 
         try {

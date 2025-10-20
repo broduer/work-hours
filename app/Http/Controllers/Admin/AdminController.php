@@ -12,8 +12,8 @@ use App\Models\Task;
 use App\Models\TimeLog;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,8 +31,8 @@ final class AdminController extends Controller
         $invoiceCount = Invoice::query()->count();
         $tasksCount = Task::query()->count();
         $totalHoursLogged = (float) TimeLog::query()->sum('duration');
-        $start = Carbon::now()->subDays(29)->startOfDay();
-        $end = Carbon::now()->endOfDay();
+        $start = Date::now()->subDays(29)->startOfDay();
+        $end = Date::now()->endOfDay();
 
         /** @var Collection<int, array{date: string, count: int}> $verifiedByDay */
         $verifiedByDay = User::query()

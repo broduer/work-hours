@@ -13,9 +13,9 @@ use App\Models\TimeLog;
 use App\Models\User;
 use App\Notifications\TimeLogApproved;
 use App\Notifications\TimeLogRejected;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Throwable;
 
 final class ApprovalService
@@ -70,7 +70,7 @@ final class ApprovalService
         $timeLog->update([
             'status' => $status,
             'approved_by' => auth()->id(),
-            'approved_at' => Carbon::now(),
+            'approved_at' => Date::now(),
             'comment' => $comment,
             'is_paid' => $markPaid,
         ]);
@@ -79,10 +79,10 @@ final class ApprovalService
         if ($timeLogOwner && auth()->id() !== $timeLogOwner->getKey()) {
             if ($status === TimeLogStatus::APPROVED) {
                 $timeLogOwner->notify(new TimeLogApproved($timeLog, auth()->user()));
-                \App\Events\TimeLogApproved::dispatch($timeLog, auth()->user(), $timeLogOwner);
+                event(new \App\Events\TimeLogApproved($timeLog, auth()->user(), $timeLogOwner));
             } elseif ($status === TimeLogStatus::REJECTED) {
                 $timeLogOwner->notify(new TimeLogRejected($timeLog, auth()->user()));
-                \App\Events\TimeLogRejected::dispatch($timeLog, auth()->user(), $timeLogOwner);
+                event(new \App\Events\TimeLogRejected($timeLog, auth()->user(), $timeLogOwner));
             }
         }
 
@@ -142,6 +142,6 @@ final class ApprovalService
             ->where('is_approver', true)
             ->exists();
 
-        throw_if(auth()->id() !== $teamLeader->getKey() && ! $isApprover, new Exception('You are not authorized to approve this time log.'));
+        throw_if(auth()->id() !== $teamLeader->getKey() && ! $isApprover, Exception::class, 'You are not authorized to approve this time log.');
     }
 }

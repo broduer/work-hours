@@ -9,7 +9,7 @@ use App\Http\Stores\ProjectStore;
 use App\Http\Stores\TaskStore;
 use App\Http\Stores\TeamStore;
 use App\Http\Stores\TimeLogStore;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Date;
 use Inertia\Response;
 use Msamgan\Lact\Attributes\Action;
 
@@ -53,8 +53,8 @@ final class DashboardController extends Controller
 
         $startDateStr = request('start-date');
         $endDateStr = request('end-date');
-        $startDate = $startDateStr ? Carbon::parse($startDateStr)->startOfDay() : null;
-        $endDate = $endDateStr ? Carbon::parse($endDateStr)->endOfDay() : null;
+        $startDate = $startDateStr ? Date::parse($startDateStr)->startOfDay() : null;
+        $endDate = $endDateStr ? Date::parse($endDateStr)->endOfDay() : null;
 
         $dailyTrend = TimeLogStore::dailyTrend(
             teamMembersIds: $teamMembersIds,

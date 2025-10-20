@@ -55,6 +55,6 @@ final readonly class ProjectService
                     ],
                 ];
             })
-            ->toArray();
+            ->all();
     }
 }

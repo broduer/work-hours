@@ -12,9 +12,9 @@ use App\Models\Project;
 use App\Services\ProjectService;
 use App\Services\TimeLogService;
 use App\Traits\ExportableTrait;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -216,7 +216,7 @@ final class ProjectController extends Controller
         $mappedProjects = ProjectStore::projectExportMapper(projects: $projects);
 
         $headers = ['ID', 'Name', 'Description', 'Owner', 'Team Members', 'Approvers', 'Created At'];
-        $filename = 'projects_' . Carbon::now()->format('Y-m-d') . '.csv';
+        $filename = 'projects_' . Date::now()->format('Y-m-d') . '.csv';
 
         return $this->exportToCsv($mappedProjects, $headers, $filename);
     }
@@ -237,7 +237,7 @@ final class ProjectController extends Controller
         $timeLogs = TimeLogStore::timeLogs(baseQuery: $this->timeLogService->baseProjectQuery($project));
         $mappedTimeLogs = TimeLogStore::timeLogExportMapper(timeLogs: $timeLogs);
         $headers = TimeLogStore::timeLogExportHeaders();
-        $filename = 'project_time_logs_' . $project->name . '_' . Carbon::now()->format('Y-m-d') . '.csv';
+        $filename = 'project_time_logs_' . $project->name . '_' . Date::now()->format('Y-m-d') . '.csv';
 
         return $this->exportToCsv($mappedTimeLogs, $headers, $filename);
     }

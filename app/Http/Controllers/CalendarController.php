@@ -6,8 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Stores\TeamStore;
 use App\Models\TimeLog;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 
 final class CalendarController extends Controller
@@ -62,7 +62,7 @@ final class CalendarController extends Controller
 
     private function getPeriod($date, $view): array
     {
-        $date = Carbon::parse($date);
+        $date = Date::parse($date);
 
         switch ($view) {
             case 'month':

@@ -26,6 +26,6 @@ final class TeamListSearchableQuery
                     $q->where('name', 'like', '%' . $search . '%')
                         ->orWhere('email', 'like', '%' . $search . '%');
                 });
-            })->orderByDesc('created_at');
+            })->latest();
     }
 }

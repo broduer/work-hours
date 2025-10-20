@@ -11,10 +11,10 @@ use App\Http\QueryFilters\Project\SearchFilter;
 use App\Http\QueryFilters\Project\TeamMemberFilter;
 use App\Models\Project;
 use App\Models\Team;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 final class ProjectStore
 {
@@ -65,8 +65,8 @@ final class ProjectStore
         return $timeLogs->map(fn ($timeLog): array => [
             'id' => $timeLog->id,
             'user_name' => $timeLog->user ? $timeLog->user->name : 'Unknown',
-            'start_timestamp' => Carbon::parse($timeLog->start_timestamp)->toDateTimeString(),
-            'end_timestamp' => $timeLog->end_timestamp ? Carbon::parse($timeLog->end_timestamp)->toDateTimeString() : 'In Progress',
+            'start_timestamp' => Date::parse($timeLog->start_timestamp)->toDateTimeString(),
+            'end_timestamp' => $timeLog->end_timestamp ? Date::parse($timeLog->end_timestamp)->toDateTimeString() : 'In Progress',
             'duration' => $timeLog->duration ? round($timeLog->duration, 2) : 0,
             'is_paid' => $timeLog->is_paid ? 'Paid' : 'Unpaid',
             'note' => $timeLog->note,
@@ -83,7 +83,7 @@ final class ProjectStore
             'owner' => $project->user->name,
             'team_members' => $project->teamMembers->pluck('name')->implode(', '),
             'approvers' => $project->approvers->pluck('name')->implode(', '),
-            'created_at' => Carbon::parse($project->created_at)->toDateTimeString(),
+            'created_at' => Date::parse($project->created_at)->toDateTimeString(),
         ]);
     }
 

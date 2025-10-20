@@ -9,10 +9,10 @@ use App\Models\Project;
 use App\Models\Tag;
 use App\Models\Task;
 use App\Models\TaskMeta;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 
 final readonly class JiraService
 {
@@ -144,7 +144,7 @@ final readonly class JiraService
             'description' => $this->extractJiraDescription($fields['description'] ?? []),
             'status' => $this->mapJiraStatusToLocal($fields['status']['name'] ?? ''),
             'priority' => $this->mapJiraPriorityToLocal($fields['priority']['name'] ?? ''),
-            'due_date' => isset($fields['duedate']) ? Carbon::parse($fields['duedate'])->format('Y-m-d') : null,
+            'due_date' => isset($fields['duedate']) ? Date::parse($fields['duedate'])->format('Y-m-d') : null,
         ];
     }
 
@@ -155,7 +155,7 @@ final readonly class JiraService
      */
     private function extractJiraDescription(array|string|null $description): ?string
     {
-        if ($description === '' || $description === '0' || $description === [] || $description === null) {
+        if (in_array($description, ['', '0', [], null], true)) {
             return null;
         }
 

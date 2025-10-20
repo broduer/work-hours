@@ -95,7 +95,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     public function currencies(): HasMany
     {
-        return $this->hasMany(Currency::class)->orderBy('created_at', 'ASC');
+        return $this->hasMany(Currency::class)->oldest();
     }
 
     public function assignedTasks(): BelongsToMany

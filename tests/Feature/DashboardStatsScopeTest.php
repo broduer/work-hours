@@ -8,7 +8,7 @@ use App\Models\Team;
 use App\Models\TimeLog;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
@@ -52,8 +52,8 @@ it('excludes team member logs from their own external projects in dashboard stat
     TimeLog::query()->create([
         'user_id' => $member->id,
         'project_id' => $leadersProject->id,
-        'start_timestamp' => Carbon::now()->subDay(),
-        'end_timestamp' => Carbon::now()->subDay()->addHours(3),
+        'start_timestamp' => Date::now()->subDay(),
+        'end_timestamp' => Date::now()->subDay()->addHours(3),
         'duration' => 3.0,
         'is_paid' => false,
         'non_billable' => false,
@@ -64,8 +64,8 @@ it('excludes team member logs from their own external projects in dashboard stat
     TimeLog::query()->create([
         'user_id' => $member->id,
         'project_id' => $membersOwnProject->id,
-        'start_timestamp' => Carbon::now()->subDay(),
-        'end_timestamp' => Carbon::now()->subDay()->addHours(5),
+        'start_timestamp' => Date::now()->subDay(),
+        'end_timestamp' => Date::now()->subDay()->addHours(5),
         'duration' => 5.0,
         'is_paid' => false,
         'non_billable' => false,
@@ -77,8 +77,8 @@ it('excludes team member logs from their own external projects in dashboard stat
     TimeLog::query()->create([
         'user_id' => $leader->id,
         'project_id' => $leadersProject->id,
-        'start_timestamp' => Carbon::now()->subDay(),
-        'end_timestamp' => Carbon::now()->subDay()->addHours(2),
+        'start_timestamp' => Date::now()->subDay(),
+        'end_timestamp' => Date::now()->subDay()->addHours(2),
         'duration' => 2.0,
         'is_paid' => true,
         'non_billable' => false,
@@ -100,7 +100,7 @@ it('excludes team member logs from their own external projects in dashboard stat
     expect($json['unpaidHours'])->toEqual(3.0);
 
     // Ensure dailyTrend teamHours for the day equals 5 and excludes the 5h on member's own project
-    $todayMinus1 = Carbon::today()->toDateString();
+    $todayMinus1 = Date::today()->toDateString();
     $trendForDay = collect($json['dailyTrend'])->firstWhere('date', $todayMinus1);
     expect($trendForDay)->not->toBeNull();
     expect($trendForDay['teamHours'])->toEqual(0.0)->or(

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\QueryFilters\Task;
 
-use Carbon\Carbon;
 use Closure;
+use Illuminate\Support\Facades\Date;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -22,7 +22,7 @@ final class DueTodayFilter
             $truthy = in_array($value, [1, '1', true, 'true', 'on'], true);
 
             if ($truthy) {
-                $builder->whereDate('due_date', '=', Carbon::today());
+                $builder->whereDate('due_date', '=', Date::today());
             }
         }
 

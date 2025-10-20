@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\ProjectNote;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Sleep;
 
 uses(RefreshDatabase::class);
 
@@ -126,7 +127,7 @@ it('returns latest notes first', function (): void {
     $project = makeProject($owner);
 
     $first = ProjectNote::query()->create(['project_id' => $project->id, 'user_id' => $owner->id, 'body' => 'first']);
-    sleep(1);
+    Sleep::sleep(1);
     $second = ProjectNote::query()->create(['project_id' => $project->id, 'user_id' => $owner->id, 'body' => 'second']);
 
     $response = $this->actingAs($owner)->getJson(route('project.notes', $project))->assertSuccessful();

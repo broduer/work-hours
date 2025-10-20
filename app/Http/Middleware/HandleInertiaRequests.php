@@ -23,8 +23,6 @@ final class HandleInertiaRequests extends Middleware
      */
     protected $rootView = 'app';
 
-    public function __construct() {}
-
     /**
      * Determines the current asset version.
      *

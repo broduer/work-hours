@@ -16,10 +16,10 @@ use App\Models\InvoiceItem;
 use App\Models\TimeLog;
 use App\Models\User;
 use App\Notifications\InvoiceStatusChanged;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Throwable;
@@ -33,8 +33,7 @@ final class InvoiceStore
     {
         $query = Invoice::query()
             ->where('user_id', $userId)
-            ->with(['client'])
-            ->orderByDesc('created_at');
+            ->with(['client'])->latest();
 
         return self::applyFilterPipeline($query)->get();
     }
@@ -45,8 +44,7 @@ final class InvoiceStore
     public static function clientInvoices(Client $client): Collection
     {
         return $client->invoices()
-            ->with(['client', 'user'])
-            ->orderByDesc('created_at')
+            ->with(['client', 'user'])->latest()
             ->get();
     }
 
@@ -111,15 +109,15 @@ final class InvoiceStore
             'id' => $invoice->id,
             'invoice_number' => $invoice->invoice_number,
             'client' => $invoice->client->name,
-            'issue_date' => Carbon::parse($invoice->issue_date)->toDateString(),
-            'due_date' => Carbon::parse($invoice->due_date)->toDateString(),
+            'issue_date' => Date::parse($invoice->issue_date)->toDateString(),
+            'due_date' => Date::parse($invoice->due_date)->toDateString(),
             'discount_type' => $invoice->discount_type,
             'discount_value' => $invoice->discount_value,
             'discount_amount' => $invoice->discount_amount,
             'total_amount' => $invoice->total_amount,
             'paid_amount' => $invoice->paid_amount,
             'status' => $invoice->status,
-            'created_at' => Carbon::parse($invoice->created_at)->toDateTimeString(),
+            'created_at' => Date::parse($invoice->created_at)->toDateTimeString(),
         ]);
     }
 

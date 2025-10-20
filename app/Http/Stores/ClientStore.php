@@ -8,10 +8,10 @@ use App\Http\QueryFilters\Client\CreatedDateFromFilter;
 use App\Http\QueryFilters\Client\CreatedDateToFilter;
 use App\Http\QueryFilters\Client\SearchFilter;
 use App\Models\Client;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 final class ClientStore
 {
@@ -43,7 +43,7 @@ final class ClientStore
             'notes' => $client->notes,
             'hourly_rate' => $client->hourly_rate,
             'currency' => $client->currency,
-            'created_at' => Carbon::parse($client->created_at)->toDateTimeString(),
+            'created_at' => Date::parse($client->created_at)->toDateTimeString(),
         ]);
     }
 

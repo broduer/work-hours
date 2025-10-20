@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Team\CreateTeamMemberAction;
 use App\Http\Mappers\Team\TeamListMapper;
 use App\Http\QueryBuilders\Team\TeamListSearchableQuery;
 use App\Http\QueryBuilders\Team\TimeLogQuery;
@@ -52,7 +53,7 @@ final class TeamController extends Controller
      * @throws Throwable
      */
     #[Action(method: 'post', name: 'team.store', middleware: ['auth', 'verified'])]
-    public function store(StoreTeamMemberRequest $request): void
+    public function store(StoreTeamMemberRequest $request, CreateTeamMemberAction $createTeamMemberAction): void
     {
         $userData = $request->safe()->except(['hourly_rate', 'currency', 'non_monetary', 'is_employee', 'enable_clockin', 'clockin_pin', 'clockout_duration']);
         $nonMonetary = $request->boolean('non_monetary', false);
@@ -60,7 +61,7 @@ final class TeamController extends Controller
         $enableClockin = $request->boolean('enable_clockin', false);
         $clockinPin = $request->string('clockin_pin')->toString();
 
-        $result = TeamStore::createOrAttachMemberForUser(
+        $result = $createTeamMemberAction->handle(
             ownerUserId: auth()->id(),
             userData: $userData,
             hourlyRate: (int) $request->get('hourly_rate'),
@@ -80,7 +81,7 @@ final class TeamController extends Controller
             $user->notify(new TeamMemberCreated($user, $creator, $userData['password']));
         } else {
             $user->notify(new TeamMemberAdded($user, $creator));
-            \App\Events\TeamMemberAdded::dispatch($user, $creator);
+            event(new \App\Events\TeamMemberAdded($user, $creator));
         }
     }
 

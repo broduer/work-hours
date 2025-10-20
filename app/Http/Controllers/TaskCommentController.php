@@ -95,7 +95,7 @@ final class TaskCommentController extends Controller
             $users = User::query()->whereIn('id', $recipientIdArray)->get();
             foreach ($users as $user) {
                 $user->notify(new TaskCommented($task, $comment, auth()->user()));
-                \App\Events\TaskCommented::dispatch($task, $comment, auth()->user(), $user);
+                event(new \App\Events\TaskCommented($task, $comment, auth()->user(), $user));
             }
         }
 

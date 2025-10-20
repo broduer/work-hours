@@ -14,10 +14,10 @@ use App\Http\QueryFilters\Task\StatusFilter;
 use App\Http\QueryFilters\Task\TagFilter;
 use App\Models\Project;
 use App\Models\Task;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 final class TaskStore
 {
@@ -28,16 +28,14 @@ final class TaskStore
                 $query->where('user_id', $userId);
             })
             ->with(['project', 'assignees', 'meta', 'tags'])
-            ->withCount('comments')
-            ->orderByDesc('created_at');
+            ->withCount('comments')->latest();
 
         $assignedTasksQuery = Task::query()
             ->whereHas('assignees', function ($query) use ($userId): void {
                 $query->where('users.id', $userId);
             })
             ->with(['project', 'assignees', 'meta', 'tags'])
-            ->withCount('comments')
-            ->orderByDesc('created_at');
+            ->withCount('comments')->latest();
 
         $ownedProjectTasks = self::applyFilterPipeline($ownedProjectTasksQuery)->get();
         $assignedTasks = self::applyFilterPipeline($assignedTasksQuery)->get();
@@ -82,9 +80,9 @@ final class TaskStore
             'description' => $task->description,
             'status' => ucfirst(str_replace('_', ' ', $task->status)),
             'priority' => ucfirst((string) $task->priority),
-            'due_date' => $task->due_date ? Carbon::parse($task->due_date)->toDateString() : 'No due date',
+            'due_date' => $task->due_date ? Date::parse($task->due_date)->toDateString() : 'No due date',
             'assignees' => $task->assignees->pluck('name')->implode(', '),
-            'created_at' => Carbon::parse($task->created_at)->toDateTimeString(),
+            'created_at' => Date::parse($task->created_at)->toDateTimeString(),
         ]);
     }
 

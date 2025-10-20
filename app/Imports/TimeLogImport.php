@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -52,8 +53,8 @@ final class TimeLogImport implements ToCollection, WithHeadingRow, WithValidatio
             $validator = Validator::make($row->toArray(), $this->rules(), $this->customValidationMessages());
 
             try {
-                $startTimestamp = Carbon::parse($row['start_timestamp']);
-                $endTimestamp = empty($row['end_timestamp']) ? null : Carbon::parse($row['end_timestamp']);
+                $startTimestamp = Date::parse($row['start_timestamp']);
+                $endTimestamp = empty($row['end_timestamp']) ? null : Date::parse($row['end_timestamp']);
 
                 $duration = null;
                 if ($endTimestamp instanceof Carbon) {

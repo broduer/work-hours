@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 
 final readonly class TeamService
 {
@@ -32,6 +32,6 @@ final readonly class TeamService
      */
     public function csvDateFilename(string $prefix): string
     {
-        return $prefix . '_' . Carbon::now()->format('Y-m-d') . '.csv';
+        return $prefix . '_' . Date::now()->format('Y-m-d') . '.csv';
     }
 }

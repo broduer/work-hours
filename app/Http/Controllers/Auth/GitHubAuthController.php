@@ -45,7 +45,7 @@ final class GitHubAuthController extends Controller
         } catch (Exception $e) {
             Log::error($e);
 
-            return redirect()->route('login')->with('status', 'GitHub authentication failed. Please try again.');
+            return to_route('login')->with('status', 'GitHub authentication failed. Please try again.');
         }
     }
 }

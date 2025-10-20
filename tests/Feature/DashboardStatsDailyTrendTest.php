@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
@@ -50,8 +50,8 @@ it('returns daily trend for a custom date range', function (): void {
     $user = User::factory()->create();
     actingAs($user);
 
-    $start = Carbon::parse('2025-01-01');
-    $end = Carbon::parse('2025-01-05');
+    $start = Date::parse('2025-01-01');
+    $end = Date::parse('2025-01-05');
 
     $response = getJson(route('dashboard.stats', [
         'start-date' => $start->toDateString(),

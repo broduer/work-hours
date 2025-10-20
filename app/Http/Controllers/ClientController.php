@@ -9,10 +9,10 @@ use App\Http\Requests\UpdateClientRequest;
 use App\Http\Stores\ClientStore;
 use App\Models\Client;
 use App\Traits\ExportableTrait;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -138,7 +138,7 @@ final class ClientController extends Controller
     public function clientExport(): StreamedResponse
     {
         $headers = ClientStore::exportHeaders();
-        $filename = 'clients_' . Carbon::now()->format('Y-m-d') . '.csv';
+        $filename = 'clients_' . Date::now()->format('Y-m-d') . '.csv';
 
         return $this->exportToCsv(
             ClientStore::clientExportMapper(ClientStore::userClients(Auth::id())),
