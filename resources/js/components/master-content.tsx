@@ -14,49 +14,63 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
 
     return (
         <div className="relative flex flex-1 flex-col">
-            <div className="sticky top-0 z-20 border-b border-gray-200 bg-gradient-to-r from-white/95 to-blue-50/95 shadow-md backdrop-blur-md dark:border-gray-700 dark:from-gray-800/95 dark:to-gray-750/95 print:hidden">
-                <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3.5">
-                    <div className="flex items-center">
+            <div className="sticky top-0 z-20 border-b border-gray-200 bg-gradient-to-r from-blue-600/90 to-indigo-700/90 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:from-blue-900/90 dark:to-indigo-900/90 print:hidden">
+                <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3.5 relative">
+                    {/* Decorative background elements */}
+                    <div
+                        className="absolute top-0 left-0 h-16 w-16 rounded-br-[3rem] bg-white/10 dark:bg-white/5"
+                        aria-hidden="true"
+                    ></div>
+                    <div
+                        className="absolute -top-6 -right-6 h-32 w-32 rounded-full bg-white/5 dark:bg-white/5"
+                        aria-hidden="true"
+                    ></div>
+                    <div
+                        className="absolute bottom-0 right-24 h-12 w-12 rounded-full bg-white/10 dark:bg-white/5"
+                        aria-hidden="true"
+                    ></div>
+
+                    <div className="flex items-center z-10">
                         <div className="relative flex items-center">
                             <Link
                                 href={route('dashboard')}
-                                className="rounded-lg p-2 text-gray-700 transition-all hover:bg-blue-100/70 hover:text-blue-700 dark:text-gray-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 cursor-pointer"
+                                className="rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10 cursor-pointer"
                             >
                                 <Home className="h-5 w-5" />
                             </Link>
                         </div>
                         {breadcrumbs.length > 0 && (
                             <div className="ml-2 flex items-center overflow-x-auto">
-                                <ChevronRight className="mx-1 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                <ChevronRight className="mx-1 h-4 w-4 text-white/70 dark:text-gray-300" />
                                 {breadcrumbs.map((breadcrumb, index) => (
                                     <div key={breadcrumb.href || index} className="flex items-center whitespace-nowrap">
                                         {breadcrumb.href ? (
                                             <Link
                                                 href={breadcrumb.href}
-                                                className="text-sm font-medium text-gray-700 transition-all hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-400"
+                                                className="text-sm font-medium text-white/90 transition-all hover:text-white dark:text-gray-200 dark:hover:text-white"
                                             >
                                                 {breadcrumb.title}
                                             </Link>
                                         ) : (
-                                            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{breadcrumb.title}</span>
+                                            <span className="text-sm font-semibold text-white dark:text-white">{breadcrumb.title}</span>
                                         )}
-                                        {index < breadcrumbs.length - 1 && <ChevronRight className="mx-1 h-4 w-4 text-gray-400 dark:text-gray-500" />}
+                                        {index < breadcrumbs.length - 1 && <ChevronRight className="mx-1 h-4 w-4 text-white/70 dark:text-gray-300" />}
                                     </div>
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center z-10">
                         <RunningTracker />
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <AppearanceToggleDropdown className="rounded-lg text-gray-700 dark:text-gray-200" />
+                    <div className="flex items-center gap-4 z-10">
+                        <AppearanceToggleDropdown className="rounded-lg text-white dark:text-gray-100" />
 
                         <Link
                             href="/calendar"
-                            className="relative flex items-center rounded-lg p-2 text-gray-700 transition-all hover:bg-blue-100/70 hover:text-blue-700 dark:text-gray-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 cursor-pointer"
+                            className="relative flex items-center rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10 cursor-pointer"
                             aria-label="View calendar"
                         >
                             <svg
@@ -81,7 +95,7 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
                         {isEmployee && hasCheckinEnabled && (
                             <Link
                                 href={route('checkin.index')}
-                                className="relative flex items-center rounded-lg p-2 text-gray-700 transition-all hover:bg-blue-100/70 hover:text-blue-700 dark:text-gray-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                                className="relative flex items-center rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10"
                                 aria-label="Employee check-in"
                             >
                                 <svg
@@ -110,7 +124,7 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
                         {isAdmin && (
                             <Link
                                 href="/administration"
-                                className="relative flex items-center rounded-lg p-2 text-gray-700 transition-all hover:bg-blue-100/70 hover:text-blue-700 dark:text-gray-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                                className="relative flex items-center rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10"
                                 aria-label="Admin Dashboard"
                             >
                                 <Settings className="h-5 w-5" />
@@ -119,7 +133,7 @@ export function MasterContent({ children, breadcrumbs = [] }: MasterContentProps
 
                         <Link
                             href="/notifications"
-                            className="relative flex items-center rounded-lg p-2 text-gray-700 transition-all hover:bg-blue-100/70 hover:text-blue-700 dark:text-gray-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                            className="relative flex items-center rounded-lg p-2 text-white transition-all hover:bg-white/20 hover:text-white dark:text-gray-100 dark:hover:bg-white/10"
                             aria-label="View notifications"
                         >
                             <Bell className="h-5 w-5" />
