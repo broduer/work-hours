@@ -151,7 +151,7 @@ export default function RunningTracker() {
                         <DialogDescription>Set an exact time or use quick adjustments.</DialogDescription>
                     </DialogHeader>
 
-                    <div className="mt-4 flex items-center gap-3">
+                    <div className="flex gap-2 p-4">
                         <div className="flex w-1/3 flex-col items-start">
                             <label className="mb-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">Hours</label>
                             <Input
@@ -187,7 +187,7 @@ export default function RunningTracker() {
                         </div>
                     </div>
 
-                    <div className="mt-4 flex justify-between gap-2">
+                    <div className="space-x-0.5">
                         <Button
                             variant="outline"
                             onClick={() => applyQuick(-15)}
