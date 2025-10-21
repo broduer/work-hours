@@ -55,7 +55,7 @@ export default function RunningTracker() {
 
     return (
         <div className="mx-4 flex max-w-full flex-1 items-center justify-center">
-            <div className="flex items-center gap-6 rounded-full px-4 py-2 bg-white/80 backdrop-blur-sm shadow-sm ring-1 ring-neutral-200/50 transition-all duration-300 dark:bg-gray-900/80 dark:ring-neutral-800/50">
+            <div className="flex items-center gap-6 rounded-full px-4 p-0.5 bg-white/80 backdrop-blur-sm shadow-sm ring-1 ring-neutral-200/50 transition-all duration-300 dark:bg-gray-900/80 dark:ring-neutral-800/50">
                 <div className="flex min-w-0 flex-row">
                     <div className="flex items-center gap-3">
                         <div className="relative">
@@ -75,7 +75,7 @@ export default function RunningTracker() {
                 <div className="flex items-center gap-2">
                     <Button
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 text-xs"
                         onClick={() => applyQuick(-5)}
                         title="Subtract 5 minutes"
                     >
@@ -83,7 +83,7 @@ export default function RunningTracker() {
                     </Button>
                     <Button
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 text-xs"
                         onClick={() => applyQuick(5)}
                         title="Add 5 minutes"
                     >
@@ -91,7 +91,7 @@ export default function RunningTracker() {
                     </Button>
                     <Button
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 text-xs"
                         onClick={() => setOpen(true)}
                         title="Edit time"
                     >
@@ -106,7 +106,7 @@ export default function RunningTracker() {
                             onCheckedChange={(c) => setNonBillable(Boolean(c))}
                             className="border-neutral-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 dark:border-neutral-600"
                         />
-                        <Label htmlFor="non_billable_rt" className="cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300">
+                        <Label htmlFor="non_billable_rt" className="cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300 font-bold">
                             Non-billable
                         </Label>
                     </div>
