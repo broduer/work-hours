@@ -55,17 +55,13 @@ export default function RunningTracker() {
 
     return (
         <div className="mx-4 flex max-w-full flex-1 items-center justify-center">
-            <div className="flex items-center gap-6 rounded-full px-4 p-0.5 bg-white/80 backdrop-blur-sm shadow-sm ring-1 ring-neutral-200/50 transition-all duration-300 dark:bg-gray-900/80 dark:ring-neutral-800/50">
+            <div className="flex items-center gap-6 rounded-full bg-white/80 p-0.5 px-4 shadow-sm ring-1 ring-neutral-200/50 backdrop-blur-sm transition-all duration-300 dark:bg-gray-900/80 dark:ring-neutral-800/50">
                 <div className="flex min-w-0 flex-row">
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <div className={`h-3 w-3 flex-shrink-0 rounded-full ${paused ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
-                            {!paused && (
-                                <div className="absolute -inset-1 rounded-full bg-emerald-500/20 animate-ping"></div>
-                            )}
-                            {paused && (
-                                <div className="absolute -inset-1 rounded-full bg-amber-500/30 animate-pulse"></div>
-                            )}
+                            {!paused && <div className="absolute -inset-1 animate-ping rounded-full bg-emerald-500/20"></div>}
+                            {paused && <div className="absolute -inset-1 animate-pulse rounded-full bg-amber-500/30"></div>}
                         </div>
                         <div className="text-sm font-medium tracking-tight break-words text-gray-800 dark:text-gray-100">
                             <span className="font-semibold">{task.project_name}</span> • <span className="line-clamp-1">{task.title}</span>
@@ -75,7 +71,7 @@ export default function RunningTracker() {
                 <div className="flex items-center gap-2">
                     <Button
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 text-xs"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-xs text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         onClick={() => applyQuick(-5)}
                         title="Subtract 5 minutes"
                     >
@@ -83,7 +79,7 @@ export default function RunningTracker() {
                     </Button>
                     <Button
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 text-xs"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-xs text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         onClick={() => applyQuick(5)}
                         title="Add 5 minutes"
                     >
@@ -91,7 +87,7 @@ export default function RunningTracker() {
                     </Button>
                     <Button
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 text-xs"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-xs text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         onClick={() => setOpen(true)}
                         title="Edit time"
                     >
@@ -104,9 +100,9 @@ export default function RunningTracker() {
                             id="non_billable_rt"
                             checked={nonBillable}
                             onCheckedChange={(checked) => setNonBillable(checked)}
-                            className="border-neutral-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 dark:border-neutral-600"
+                            className="border-neutral-300 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 dark:border-neutral-600"
                         />
-                        <Label htmlFor="non_billable_rt" className="cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300 font-bold">
+                        <Label htmlFor="non_billable_rt" className="cursor-pointer text-xs font-bold font-medium text-gray-600 dark:text-gray-300">
                             Non-billable
                         </Label>
                     </div>
@@ -191,42 +187,42 @@ export default function RunningTracker() {
                         <Button
                             variant="outline"
                             onClick={() => applyQuick(-15)}
-                            className="transition-all hover:bg-red-50 hover:text-red-700 hover:border-red-200 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-900/30"
+                            className="transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-700 dark:hover:border-red-900/30 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         >
                             -15m
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => applyQuick(-5)}
-                            className="transition-all hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 dark:hover:bg-amber-900/20 dark:hover:text-amber-400 dark:hover:border-amber-900/30"
+                            className="transition-all hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 dark:hover:border-amber-900/30 dark:hover:bg-amber-900/20 dark:hover:text-amber-400"
                         >
                             -5m
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => applyQuick(-1)}
-                            className="transition-all hover:bg-neutral-50 hover:text-neutral-700 hover:border-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-300 dark:hover:border-neutral-700"
+                            className="transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 dark:hover:border-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
                         >
                             -1m
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => applyQuick(1)}
-                            className="transition-all hover:bg-neutral-50 hover:text-neutral-700 hover:border-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-300 dark:hover:border-neutral-700"
+                            className="transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 dark:hover:border-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
                         >
                             +1m
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => applyQuick(5)}
-                            className="transition-all hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400 dark:hover:border-emerald-900/30"
+                            className="transition-all hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:border-emerald-900/30 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400"
                         >
                             +5m
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => applyQuick(15)}
-                            className="transition-all hover:bg-green-50 hover:text-green-700 hover:border-green-200 dark:hover:bg-green-900/20 dark:hover:text-green-400 dark:hover:border-green-900/30"
+                            className="transition-all hover:border-green-200 hover:bg-green-50 hover:text-green-700 dark:hover:border-green-900/30 dark:hover:bg-green-900/20 dark:hover:text-green-400"
                         >
                             +15m
                         </Button>
@@ -236,10 +232,7 @@ export default function RunningTracker() {
                         <Button variant="outline" onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
-                        <Button
-                            className="bg-blue-600 text-sm text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
-                            onClick={onSave}
-                        >
+                        <Button className="bg-blue-600 text-sm text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600" onClick={onSave}>
                             Save Changes
                         </Button>
                     </DialogFooter>

@@ -65,10 +65,10 @@ export default function OnlineUsers({ collapsed = true }: OnlineUsersProps) {
                                 <TooltipTrigger asChild>
                                     <div className="relative">
                                         <span
-                                            className="block h-3.5 w-3.5 rounded-full bg-green-500 shadow-sm transition-transform hover:scale-110 ring-2 ring-white dark:ring-neutral-900"
+                                            className="block h-3.5 w-3.5 rounded-full bg-green-500 shadow-sm ring-2 ring-white transition-transform hover:scale-110 dark:ring-neutral-900"
                                             aria-label="Online"
                                         />
-                                        <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-green-300 animate-pulse"></span>
+                                        <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 animate-pulse rounded-full bg-green-300"></span>
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent
@@ -103,15 +103,15 @@ export default function OnlineUsers({ collapsed = true }: OnlineUsersProps) {
                         {filteredOnline.map((u) => (
                             <li key={u.id} className="flex items-center">
                                 <div className="relative">
-                                    <span className="h-3 w-3 rounded-full bg-green-500 block" aria-hidden="true" />
-                                    <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-green-300 animate-pulse"></span>
+                                    <span className="block h-3 w-3 rounded-full bg-green-500" aria-hidden="true" />
+                                    <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 animate-pulse rounded-full bg-green-300"></span>
                                 </div>
                                 <span className="ml-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">{u.name}</span>
                             </li>
                         ))}
                         {filteredOnline.length === 0 && (
                             <li className="flex items-center">
-                                <span className="h-3 w-3 rounded-full bg-neutral-300 dark:bg-neutral-700 block" aria-hidden="true" />
+                                <span className="block h-3 w-3 rounded-full bg-neutral-300 dark:bg-neutral-700" aria-hidden="true" />
                                 <span className="ml-2.5 text-sm text-neutral-500 italic dark:text-neutral-400">No one online</span>
                             </li>
                         )}

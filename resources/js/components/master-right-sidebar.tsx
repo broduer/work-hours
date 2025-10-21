@@ -66,10 +66,18 @@ export function MasterRightSidebar({ collapsed = true }: MasterRightSidebarProps
         <div
             className={`sticky top-0 flex h-screen flex-col border-l border-neutral-200 bg-gradient-to-b from-blue-50 to-white shadow-md transition-all duration-300 ease-in-out dark:border-neutral-800 dark:from-gray-900 dark:to-gray-950 ${collapsed ? 'w-20' : 'w-52'}`}
         >
-            {/* Enhanced decorative elements with subtle animation and backdrop blur */}
-            <div className="absolute top-0 right-0 h-32 w-16 rounded-bl-[6rem] bg-blue-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-blue-600/10" aria-hidden="true"></div>
-            <div className="absolute bottom-0 left-0 h-32 w-16 rounded-tr-[6rem] bg-indigo-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-indigo-600/10" aria-hidden="true"></div>
-            <div className="absolute top-1/3 left-4 h-16 w-16 rounded-full bg-blue-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-blue-600/10" aria-hidden="true"></div>
+            <div
+                className="absolute top-0 right-0 h-32 w-16 rounded-bl-[6rem] bg-blue-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-blue-600/10"
+                aria-hidden="true"
+            ></div>
+            <div
+                className="absolute bottom-0 left-0 h-32 w-16 rounded-tr-[6rem] bg-indigo-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-indigo-600/10"
+                aria-hidden="true"
+            ></div>
+            <div
+                className="absolute top-1/3 left-4 h-16 w-16 rounded-full bg-blue-500/5 backdrop-blur-sm transition-opacity duration-700 ease-in-out dark:bg-blue-600/10"
+                aria-hidden="true"
+            ></div>
 
             <div className={`relative z-10 mt-4 flex flex-col overflow-y-auto ${collapsed ? '' : 'mr-4'}`}>
                 <div className="mb-8 px-4">
@@ -83,9 +91,9 @@ export function MasterRightSidebar({ collapsed = true }: MasterRightSidebarProps
                     <TooltipProvider delayDuration={300}>
                         <nav className="relative z-10 space-y-1.5">
                             {displayedQuickLinks.map((item) => {
-                                const isActive = typeof window !== 'undefined' &&
-                                    (window.location.pathname === item.href ||
-                                     window.location.pathname.startsWith(`${item.href.split('?')[0]}/`))
+                                const isActive =
+                                    typeof window !== 'undefined' &&
+                                    (window.location.pathname === item.href || window.location.pathname.startsWith(`${item.href.split('?')[0]}/`))
 
                                 return (
                                     <div key={item.href} className="relative">
