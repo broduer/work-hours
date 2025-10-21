@@ -55,11 +55,19 @@ export default function RunningTracker() {
 
     return (
         <div className="mx-4 flex max-w-full flex-1 items-center justify-center">
-            <div className="flex items-center gap-6 backdrop-blur-sm transition-all dark:border-gray-800 dark:bg-gray-900/90">
+            <div className="flex items-center gap-6 rounded-full px-4 py-2 bg-white/80 backdrop-blur-sm shadow-sm ring-1 ring-neutral-200/50 transition-all duration-300 dark:bg-gray-900/80 dark:ring-neutral-800/50">
                 <div className="flex min-w-0 flex-row">
-                    <div className="flex items-center gap-2">
-                        <div className={`h-2 w-2 flex-shrink-0 rounded-full ${paused ? 'animate-pulse bg-amber-500' : 'bg-emerald-500'}`}></div>
-                        <div className="text-xs font-medium tracking-tight break-words text-gray-900 dark:text-gray-50">
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <div className={`h-3 w-3 flex-shrink-0 rounded-full ${paused ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
+                            {!paused && (
+                                <div className="absolute -inset-1 rounded-full bg-emerald-500/20 animate-ping"></div>
+                            )}
+                            {paused && (
+                                <div className="absolute -inset-1 rounded-full bg-amber-500/30 animate-pulse"></div>
+                            )}
+                        </div>
+                        <div className="text-sm font-medium tracking-tight break-words text-gray-800 dark:text-gray-100">
                             <span className="font-semibold">{task.project_name}</span> • <span className="line-clamp-1">{task.title}</span>
                         </div>
                     </div>
@@ -67,7 +75,7 @@ export default function RunningTracker() {
                 <div className="flex items-center gap-2">
                     <Button
                         size="icon"
-                        className="h-6 w-6 rounded-full bg-gray-50 p-1 text-gray-700 hover:bg-gray-100 dark:bg-gray-900/50 dark:text-gray-300 dark:hover:bg-gray-800/50"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         onClick={() => applyQuick(-5)}
                         title="Subtract 5 minutes"
                     >
@@ -75,7 +83,7 @@ export default function RunningTracker() {
                     </Button>
                     <Button
                         size="icon"
-                        className="h-6 w-6 rounded-full bg-gray-50 p-1 text-gray-700 hover:bg-gray-100 dark:bg-gray-900/50 dark:text-gray-300 dark:hover:bg-gray-800/50"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         onClick={() => applyQuick(5)}
                         title="Add 5 minutes"
                     >
@@ -83,64 +91,69 @@ export default function RunningTracker() {
                     </Button>
                     <Button
                         size="icon"
-                        className="h-6 w-6 rounded-full bg-gray-50 p-1 text-gray-700 hover:bg-gray-100 dark:bg-gray-900/50 dark:text-gray-300 dark:hover:bg-gray-800/50"
+                        className="h-7 w-7 rounded-full bg-gray-50 p-1 text-gray-700 shadow-sm transition-transform hover:scale-105 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                         onClick={() => setOpen(true)}
                         title="Edit time"
                     >
-                        <Edit3 className="h-3.5 w-3.5" />
+                        <Edit3 className="h-3.5 w-3.5" strokeWidth={2} />
                     </Button>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 pr-2">
-                        <Checkbox id="non_billable_rt" checked={nonBillable} onCheckedChange={(c) => setNonBillable(Boolean(c))} />
-                        <Label htmlFor="non_billable_rt" className="cursor-pointer text-[11px] text-gray-600 dark:text-gray-300">
+                        <Checkbox
+                            id="non_billable_rt"
+                            checked={nonBillable}
+                            onCheckedChange={(c) => setNonBillable(Boolean(c))}
+                            className="border-neutral-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 dark:border-neutral-600"
+                        />
+                        <Label htmlFor="non_billable_rt" className="cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300">
                             Non-billable
                         </Label>
                     </div>
                     {paused ? (
                         <Button
                             size="icon"
-                            className="h-6 w-6 rounded-full bg-emerald-50 p-1 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
+                            className="h-7 w-7 rounded-full bg-emerald-50 p-1 text-emerald-700 shadow-sm transition-transform hover:scale-105 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
                             onClick={resume}
                             title="Resume"
                         >
-                            <Play className="h-3.5 w-3.5" />
+                            <Play className="h-4 w-4" strokeWidth={2} />
                         </Button>
                     ) : (
                         <Button
                             size="icon"
-                            className="h-6 w-6 rounded-full bg-amber-50 p-1 text-amber-700 hover:bg-amber-100 dark:bg-amber-950/50 dark:text-amber-400 dark:hover:bg-amber-900/50"
+                            className="h-7 w-7 rounded-full bg-amber-50 p-1 text-amber-700 shadow-sm transition-transform hover:scale-105 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50"
                             onClick={pause}
                             title="Pause"
                         >
-                            <Pause className="h-3.5 w-3.5" />
+                            <Pause className="h-4 w-4" strokeWidth={2} />
                         </Button>
                     )}
                     <Button
                         size="icon"
-                        className="h-6 w-6 rounded-full bg-red-50 p-1 text-red-700 hover:bg-red-100 dark:bg-red-950/50 dark:text-red-400 dark:hover:bg-red-900/50"
+                        className="h-7 w-7 rounded-full bg-red-50 p-1 text-red-700 shadow-sm transition-transform hover:scale-105 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
                         onClick={() => stop({ non_billable: nonBillable })}
                         title="Stop"
                     >
-                        <Square className="h-3.5 w-3.5" />
+                        <Square className="h-4 w-4" strokeWidth={2} />
                     </Button>
                 </div>
-                <div className="flex items-center gap-2 text-lg font-medium text-blue-600 dark:text-blue-400">
-                    <Clock className="h-3 w-3" />
-                    {timeStr}
+                <div className="flex items-center gap-2 text-lg font-semibold text-blue-600 dark:text-blue-400">
+                    <Clock className="h-4 w-4" strokeWidth={2} />
+                    <span className="tabular-nums">{timeStr}</span>
                 </div>
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Edit Running Timer</DialogTitle>
                         <DialogDescription>Set an exact time or use quick adjustments.</DialogDescription>
                     </DialogHeader>
 
-                    <div className="mt-2 flex items-center gap-3">
+                    <div className="mt-4 flex items-center gap-3">
                         <div className="flex w-1/3 flex-col items-start">
-                            <label className="text-xs text-gray-500 dark:text-gray-400">Hours</label>
+                            <label className="mb-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">Hours</label>
                             <Input
                                 type="number"
                                 value={hours}
@@ -151,7 +164,7 @@ export default function RunningTracker() {
                             />
                         </div>
                         <div className="flex w-1/3 flex-col items-start">
-                            <label className="text-xs text-gray-500 dark:text-gray-400">Minutes</label>
+                            <label className="mb-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">Minutes</label>
                             <Input
                                 type="number"
                                 value={minutes}
@@ -162,7 +175,7 @@ export default function RunningTracker() {
                             />
                         </div>
                         <div className="flex w-1/3 flex-col items-start">
-                            <label className="text-xs text-gray-500 dark:text-gray-400">Seconds</label>
+                            <label className="mb-1.5 text-xs font-medium text-gray-600 dark:text-gray-400">Seconds</label>
                             <Input
                                 type="number"
                                 value={seconds}
@@ -174,36 +187,60 @@ export default function RunningTracker() {
                         </div>
                     </div>
 
-                    <div className="mt-3 flex justify-between gap-2">
-                        <Button variant="outline" onClick={() => applyQuick(-15)}>
+                    <div className="mt-4 flex justify-between gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => applyQuick(-15)}
+                            className="transition-all hover:bg-red-50 hover:text-red-700 hover:border-red-200 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-900/30"
+                        >
                             -15m
                         </Button>
-                        <Button variant="outline" onClick={() => applyQuick(-5)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => applyQuick(-5)}
+                            className="transition-all hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 dark:hover:bg-amber-900/20 dark:hover:text-amber-400 dark:hover:border-amber-900/30"
+                        >
                             -5m
                         </Button>
-                        <Button variant="outline" onClick={() => applyQuick(-1)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => applyQuick(-1)}
+                            className="transition-all hover:bg-neutral-50 hover:text-neutral-700 hover:border-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-300 dark:hover:border-neutral-700"
+                        >
                             -1m
                         </Button>
-                        <Button variant="outline" onClick={() => applyQuick(1)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => applyQuick(1)}
+                            className="transition-all hover:bg-neutral-50 hover:text-neutral-700 hover:border-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-300 dark:hover:border-neutral-700"
+                        >
                             +1m
                         </Button>
-                        <Button variant="outline" onClick={() => applyQuick(5)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => applyQuick(5)}
+                            className="transition-all hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400 dark:hover:border-emerald-900/30"
+                        >
                             +5m
                         </Button>
-                        <Button variant="outline" onClick={() => applyQuick(15)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => applyQuick(15)}
+                            className="transition-all hover:bg-green-50 hover:text-green-700 hover:border-green-200 dark:hover:bg-green-900/20 dark:hover:text-green-400 dark:hover:border-green-900/30"
+                        >
                             +15m
                         </Button>
                     </div>
 
-                    <DialogFooter>
+                    <DialogFooter className="mt-6">
                         <Button variant="outline" onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
                         <Button
-                            className={'flex items-center gap-2 bg-gray-900 text-sm hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600'}
+                            className="bg-blue-600 text-sm text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
                             onClick={onSave}
                         >
-                            Save
+                            Save Changes
                         </Button>
                     </DialogFooter>
                 </DialogContent>
