@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { useTimeTracker } from '@/contexts/time-tracker-context'
 import { Clock, Edit3, Pause, Play, Square } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -100,10 +100,10 @@ export default function RunningTracker() {
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 pr-2">
-                        <Checkbox
+                        <Switch
                             id="non_billable_rt"
                             checked={nonBillable}
-                            onCheckedChange={(c) => setNonBillable(Boolean(c))}
+                            onCheckedChange={(checked) => setNonBillable(checked)}
                             className="border-neutral-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 dark:border-neutral-600"
                         />
                         <Label htmlFor="non_billable_rt" className="cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300 font-bold">
