@@ -50,37 +50,71 @@ export default function OnlineUsers({ collapsed = true }: OnlineUsersProps) {
 
     return (
         <div className="mb-6 px-4">
-            <div className="mb-3 pb-2">
+            <div className="mb-4 border-b border-neutral-200 pb-1 dark:border-neutral-700">
                 <h3
-                    className={`text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400 ${collapsed ? 'text-center' : ''}`}
+                    className={`text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400 ${collapsed ? 'text-center' : ''}`}
                 >
                     {collapsed ? 'Online' : `Online (${filteredOnline.length})`}
                 </h3>
             </div>
-            <TooltipProvider>
+            <TooltipProvider delayDuration={300}>
                 {collapsed ? (
                     <div className="flex flex-col items-center gap-3">
                         {filteredOnline.map((u) => (
                             <Tooltip key={u.id}>
                                 <TooltipTrigger asChild>
-                                    <span
-                                        className="block h-3.5 w-3.5 rounded-full bg-green-500 ring-2 ring-white dark:ring-neutral-900"
-                                        aria-label="Online"
-                                    />
+                                    <div className="relative">
+                                        <span
+                                            className="block h-3.5 w-3.5 rounded-full bg-green-500 shadow-sm transition-transform hover:scale-110 ring-2 ring-white dark:ring-neutral-900"
+                                            aria-label="Online"
+                                        />
+                                        <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-green-300 animate-pulse"></span>
+                                    </div>
                                 </TooltipTrigger>
-                                <TooltipContent side="left">{u.name}</TooltipContent>
+                                <TooltipContent
+                                    side="left"
+                                    className="border-neutral-200 bg-white text-neutral-800 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                                    sideOffset={5}
+                                >
+                                    {u.name}
+                                </TooltipContent>
                             </Tooltip>
                         ))}
+                        {filteredOnline.length === 0 && (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span
+                                        className="block h-3.5 w-3.5 rounded-full bg-neutral-300 ring-2 ring-white dark:bg-neutral-700 dark:ring-neutral-900"
+                                        aria-label="No one online"
+                                    />
+                                </TooltipTrigger>
+                                <TooltipContent
+                                    side="left"
+                                    className="border-neutral-200 bg-white text-neutral-800 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                                    sideOffset={5}
+                                >
+                                    No one online
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
                     </div>
                 ) : (
-                    <ul className="space-y-2">
+                    <ul className="space-y-2.5">
                         {filteredOnline.map((u) => (
                             <li key={u.id} className="flex items-center">
-                                <span className="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true" />
-                                <span className="ml-2 text-sm text-neutral-700 dark:text-neutral-300">{u.name}</span>
+                                <div className="relative">
+                                    <span className="h-3 w-3 rounded-full bg-green-500 block" aria-hidden="true" />
+                                    <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-green-300 animate-pulse"></span>
+                                </div>
+                                <span className="ml-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">{u.name}</span>
                             </li>
                         ))}
-                        {filteredOnline.length === 0 && <li className="text-sm text-neutral-500 dark:text-neutral-400">No one online</li>}
+                        {filteredOnline.length === 0 && (
+                            <li className="flex items-center">
+                                <span className="h-3 w-3 rounded-full bg-neutral-300 dark:bg-neutral-700 block" aria-hidden="true" />
+                                <span className="ml-2.5 text-sm text-neutral-500 italic dark:text-neutral-400">No one online</span>
+                            </li>
+                        )}
                     </ul>
                 )}
             </TooltipProvider>
