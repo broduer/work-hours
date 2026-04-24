@@ -1,11 +1,17 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
+import { execSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import { lactPreBuild } from './vendor/msamgan/lact/resources/methods';
-import {run} from "vite-plugin-run";
+import { run } from 'vite-plugin-run';
 
+const lactPreBuild = () => ({
+    name: 'lact-pre-build',
+    buildStart() {
+        execSync('php vendor/bin/lact', { stdio: 'inherit' });
+    },
+});
 
 export default defineConfig({
     plugins: [
@@ -18,13 +24,13 @@ export default defineConfig({
         tailwindcss(),
         run([
             {
-                name: "lact",
+                name: 'lact',
                 build: false,
-                run: ["php", "artisan", "lact:run"],
-                pattern: ["routes/**/*.php", "app/**/Http/Controllers/**/*.php"],
+                run: ['php', 'artisan', 'lact:run'],
+                pattern: ['routes/**/*.php', 'app/**/Http/Controllers/**/*.php'],
             },
         ]),
-        lactPreBuild()
+        lactPreBuild(),
     ],
     esbuild: {
         jsx: 'automatic',
