@@ -13,23 +13,6 @@ const lactPreBuild = () => ({
     },
 });
 
-const lactWindowsFix = () => ({
-    name: 'lact-windows-fix',
-    enforce: 'pre' as const,
-    resolveId(id: string) {
-        // lact v1.2.2 uses PHP's DIRECTORY_SEPARATOR when generating import paths.
-        // On Windows, DIRECTORY_SEPARATOR is '\', producing an invalid path:
-        //   import { route } from '/vendor/.../actions\routes'
-        // Normalize backslashes and resolve these imports explicitly.
-        const normalized = id.replace(/\\/g, '/');
-        if (normalized === '/vendor/msamgan/lact/resources/actions/routes') {
-            return resolve(__dirname, 'vendor/msamgan/lact/resources/actions/routes.js');
-        }
-
-        return null;
-    },
-});
-
 export default defineConfig({
     plugins: [
         laravel({
@@ -48,7 +31,6 @@ export default defineConfig({
             },
         ]),
         lactPreBuild(),
-        lactWindowsFix(),
     ],
     esbuild: {
         jsx: 'automatic',
