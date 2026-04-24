@@ -20,9 +20,13 @@ const lactWindowsFix = () => ({
         // lact v1.2.2 uses PHP's DIRECTORY_SEPARATOR when generating import paths.
         // On Windows, DIRECTORY_SEPARATOR is '\', producing an invalid path:
         //   import { route } from '/vendor/.../actions\routes'
-        // Normalize backslashes and resolve these imports explicitly.
+        // During dev the id arrives as a root-relative path; during production
+        // builds Rollup resolves it to an absolute path first. Handle both forms.
         const normalized = id.replace(/\\/g, '/');
-        if (normalized === '/vendor/msamgan/lact/resources/actions/routes') {
+        if (
+            normalized === '/vendor/msamgan/lact/resources/actions/routes' ||
+            normalized.endsWith('/vendor/msamgan/lact/resources/actions/routes')
+        ) {
             return resolve(__dirname, 'vendor/msamgan/lact/resources/actions/routes.js');
         }
 
